@@ -1,0 +1,210 @@
+package com.goodocom.gocsdkfinal.fragment;
+
+import com.goodocom.gocsdkfinal.R;
+import com.goodocom.gocsdkfinal.activity.MainActivity;
+
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
+import android.os.RemoteException;
+import android.support.v4.app.Fragment;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.view.ViewGroup;
+import android.webkit.WebView.FindListener;
+import android.widget.EditText;
+import android.widget.ImageView;
+
+public class FragmentSetting extends Fragment implements OnClickListener {
+
+	public static final int MSG_DEVICE_NAME = 0;
+	public static final int MSG_PIN_CODE = 1;
+
+	private boolean isConnectSwitch = false;
+	private boolean isAnswerSwitch = false;
+
+	private MainActivity activity;
+	/*private static Handler hand = null;
+	private Handler handler = new Handler() {
+		public void handleMessage(android.os.Message msg) {
+			switch (msg.what) {
+			case MSG_DEVICE_NAME:
+				String deviceName = (String) msg.obj;
+				// tv_device_name.setText(deviceName);
+				et_device_name.setText(deviceName);
+				break;
+			case MSG_PIN_CODE:
+				String pinCode = (String) msg.obj;
+				// tv_pin_code.setText(pinCode);
+				et_pin_code.setText(pinCode);
+				break;
+			}
+		};
+	};
+	public static Handler getHandler() {
+		return hand;
+	}*/
+
+	private EditText et_device_name;
+	private EditText et_pin_code;
+	private ImageView auto_connect_switch;
+	private ImageView auto_answer_switch;
+
+	
+	@Override
+	public void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		activity = (MainActivity) getActivity();
+	}
+
+	@Override
+	public View onCreateView(LayoutInflater inflater, ViewGroup container,
+			Bundle savedInstanceState) {
+		View view = View.inflate(activity, R.layout.fragmentsettings, null);
+		initView(view);
+		//initData();
+		//hand = handler;
+		return view;
+	}
+
+
+
+	private View initView(View view) {
+		et_device_name = (EditText) view.findViewById(R.id.et_device_name);
+		et_pin_code = (EditText) view.findViewById(R.id.et_pin_code);
+		auto_connect_switch = (ImageView) view
+				.findViewById(R.id.auto_connect_switch);
+		auto_answer_switch = (ImageView) view
+				.findViewById(R.id.auto_answer_switch);
+		auto_answer_switch.setOnClickListener(this);
+		auto_connect_switch.setOnClickListener(this);
+		if(MainActivity.mLocalName!=null){
+			et_device_name.setText(MainActivity.mLocalName);
+		}
+		if(MainActivity.mPinCode!=null){
+			et_pin_code.setText(MainActivity.mPinCode);
+		}
+		et_device_name.addTextChangedListener(new TextWatcher() {
+			
+			@Override
+			public void onTextChanged(CharSequence s, int start, int before, int count) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void beforeTextChanged(CharSequence s, int start, int count,
+					int after) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void afterTextChanged(Editable s) {
+				String deviceName = et_device_name.getText().toString().trim();
+				try {
+					MainActivity.getService().setLocalName(deviceName); 
+				 } catch(RemoteException e) { 
+					 e.printStackTrace();
+				}
+				Handler handler = FragmentBlueToothInfo.getHandler();
+				if(handler==null){
+					return;
+				}
+				Message msg = new Message();
+				msg.what = FragmentBlueToothInfo.MSG_DEVICE_NAME;
+				msg.obj = deviceName;
+				handler.sendMessage(msg);
+				
+			}
+		});
+		et_pin_code.addTextChangedListener(new TextWatcher() {
+			
+			@Override
+			public void onTextChanged(CharSequence s, int start, int before, int count) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void beforeTextChanged(CharSequence s, int start, int count,
+					int after) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void afterTextChanged(Editable s) {
+				String pinCode = et_pin_code.getText().toString().trim();
+				try {
+					MainActivity.getService().setPinCode(pinCode);
+				} catch (RemoteException e) {
+					e.printStackTrace();
+				}
+				Handler handler = FragmentBlueToothInfo.getHandler();
+				if(handler==null){
+					return;
+				}
+				Message msg = new Message();
+				msg.what = FragmentBlueToothInfo.MSG_PIN_CODE;
+				msg.obj = pinCode;
+				handler.sendMessage(msg);
+			}
+		});
+		return view;
+	}
+
+	@Override
+	public void onClick(View v) {
+		switch (v.getId()) {
+		case R.id.auto_connect_switch:
+			isConnectSwitch();
+			break;
+		case R.id.auto_answer_switch:
+			isAnswerSwitch();
+			break;
+		}
+	}
+
+	private void isAnswerSwitch() {
+		isAnswerSwitch = !isAnswerSwitch;
+		if (isAnswerSwitch) {
+			auto_answer_switch.setImageResource(R.drawable.ico_4157_kai);
+			try {
+				MainActivity.getService().setAutoAnswer();
+			} catch (RemoteException e) {
+				e.printStackTrace();
+			}
+		} else {
+			auto_answer_switch.setImageResource(R.drawable.ico_4158_guan);
+			try {
+				MainActivity.getService().cancelAutoAnswer();
+			} catch (RemoteException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+
+	private void isConnectSwitch() {
+		isConnectSwitch = !isConnectSwitch;
+		if (isConnectSwitch) {
+			auto_connect_switch.setImageResource(R.drawable.ico_4157_kai);
+			try {
+				MainActivity.getService().setAutoConnect();
+			} catch (RemoteException e) {
+				e.printStackTrace();
+			}
+		} else {
+			auto_connect_switch.setImageResource(R.drawable.ico_4158_guan);
+			try {
+				MainActivity.getService().cancelAutoConnect();
+			} catch (RemoteException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+
+}

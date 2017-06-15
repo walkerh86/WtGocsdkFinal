@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:layout_gravity="center"
+    android:background="@drawable/bt_little_bg"
+    android:orientation="vertical"
+    android:padding="10dp" >
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical" >
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="15.0dip"
+            android:orientation="horizontal"
+            android:visibility="visible" >
+
+            <TextView
+                android:id="@+id/callout_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:gravity="center"
+                android:maxLength="10"
+                android:maxWidth="150.0dip"
+                android:singleLine="true"
+                android:textColor="#ffffffff"
+                android:textSize="22sp" />
+
+            <TextView
+                android:id="@+id/callout_number"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10.0dip"
+                android:ellipsize="end"
+                android:gravity="center"
+                android:maxLength="20"
+                android:singleLine="true"
+                android:textColor="#ffffffff"
+                android:textSize="22sp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="15.0dip"
+            android:orientation="horizontal"
+            android:visibility="visible">
+
+            <TextView
+                android:id="@+id/tv_phone_calling"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginBottom="10.0dip"
+                android:gravity="center"
+                android:textColor="@android:color/white"
+                android:textSize="22sp" />
+
+            <Chronometer
+                android:id="@+id/chronometer_callout"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginBottom="10.0dip"
+                android:gravity="center"
+                android:textColor="@android:color/white"
+                android:textSize="22sp" 
+                android:visibility="gone" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="10.0dip"
+        android:layout_marginTop="10.0dip"
+        android:orientation="horizontal" >
+
+        <ImageButton
+            android:id="@+id/switch_digit_key"
+            android:layout_width="0.0dip"
+            android:layout_height="wrap_content"
+            android:layout_weight="1.0"
+            android:background="@android:color/transparent"
+            android:src="@drawable/btn_jianpan_selector"
+            android:visibility="gone" />
+
+        <ImageButton
+            android:id="@+id/ibt_bt_phone_qsd"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="8.0dip"
+            android:layout_weight="1.0"
+            android:background="@android:color/transparent"
+            android:src="@drawable/btn_little_qieshengdao_selector" />
+
+        <ImageButton
+            android:id="@+id/ibt_hangup_phone_callout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="8.0dip"
+            android:layout_weight="1.0"
+            android:background="@android:color/transparent"
+            android:src="@drawable/btn_little_guaduan_selector" />
+
+        <ImageButton
+            android:id="@+id/btn_mic_mute"
+            android:layout_width="0.0dip"
+            android:layout_height="wrap_content"
+            android:layout_weight="1.0"
+            android:background="@android:color/transparent"
+            android:src="@drawable/btn_jianpan_jingyin_selector"
+            android:visibility="gone" />
+    </LinearLayout>
+
+</LinearLayout>
