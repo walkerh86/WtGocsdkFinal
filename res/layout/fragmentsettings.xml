@@ -3,42 +3,53 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical" 
-    android:paddingTop="30dp"
-    android:paddingLeft="100dp"
-    android:paddingRight="100dp"
+    android:paddingTop="10dp"
+    android:paddingLeft="20dp"
+    android:paddingRight="20dp"
     android:focusable="true"
     android:focusableInTouchMode="true">
+    <LinearLayout
+        style="@style/SettingsLineStyle"
+        android:orientation="horizontal" >
     <TextView 
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
+        android:layout_weight="1"
         android:layout_height="wrap_content"
         android:text="设备名"
         android:textColor="#FFF"
         android:textSize="25sp"/>
     <EditText 
         android:id="@+id/et_device_name"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_width="0dp"
+        android:layout_weight="1.5"
+        android:layout_height="wrap_content"        
         android:textColor="#FFF"
         android:textSize="25sp"
         android:background="@drawable/btn_6043_beij"/>
-    <TextView 
-        android:layout_marginTop="6dp"
-        android:layout_width="match_parent"
+    </LinearLayout>
+    
+    <LinearLayout
+        style="@style/SettingsLineStyle"
+        android:orientation="horizontal" >
+    <TextView
+        android:layout_width="0dp"
+        android:layout_weight="1"
         android:layout_height="wrap_content"
         android:text="PIN码"
         android:textSize="25sp"
         android:textColor="#FFF"/>
     <EditText 
         android:id="@+id/et_pin_code"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
+        android:layout_weight="1.5"
         android:layout_height="wrap_content"
         android:textColor="#FFF"
         android:textSize="25sp"
         android:background="@drawable/btn_6043_beij"/>
+    </LinearLayout>
+    
     <RelativeLayout 
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="10dp">
+        style="@style/SettingsLineStyle">
         <TextView 
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -53,9 +64,7 @@
             android:layout_alignParentRight="true"/>
     </RelativeLayout>
 	<RelativeLayout 
-	    android:layout_width="match_parent"
-	    android:layout_height="wrap_content"
-	    android:layout_marginTop="10dp">
+	    style="@style/SettingsLineStyle">
 	    <TextView 
 	        android:layout_width="wrap_content"
             android:layout_height="wrap_content"

@@ -73,7 +73,7 @@ public class FragmentBlueToothInfo extends Fragment implements OnClickListener {
 				break;
 			}
 			case MSG_SEARCHE_DEVICE_DONE: {
-				Toast.makeText(activity, "搜索完成", 0).show();
+				Toast.makeText(activity, activity.getString(R.string.search_done), 0).show();
 				iv_anim.setVisibility(View.GONE);
 				iv_anim.clearAnimation();
 				isSearch = false;
@@ -123,6 +123,9 @@ public class FragmentBlueToothInfo extends Fragment implements OnClickListener {
 				.inflate(activity, R.layout.fragmentbluetoothinfo, null);
 		initView(view);
 		hand = handler;
+		if(DBG){
+			dbgLoadData();
+		}
 		return view;
 	}
 
@@ -166,7 +169,7 @@ public class FragmentBlueToothInfo extends Fragment implements OnClickListener {
 			public void onItemClick(AdapterView<?> parent, View view,
 					int position, long id) {
 				if(GocsdkCallbackImp.hfpStatus>0){
-					Toast.makeText(activity, "已有设备连接", Toast.LENGTH_SHORT).show();
+					Toast.makeText(activity, activity.getString(R.string.device_connected), Toast.LENGTH_SHORT).show();
 				}else{
 					connectDevice(position);
 				}
@@ -288,4 +291,19 @@ public class FragmentBlueToothInfo extends Fragment implements OnClickListener {
 		public TextView tv_address;
 	}
 
+	private static final boolean DBG = false;
+	private void dbgLoadData(){
+		handler.postDelayed(new Runnable(){
+			@Override
+			public void run(){
+				for(int i=0;i<10;i++){
+					BlueToothInfo info = new BlueToothInfo();
+					info.name = "name"+i;
+					info.address="7E:68:46:65:82:0"+i;
+					bts.add(info);
+				}	
+				adapter.notifyDataSetChanged();
+			}
+		},2000);
+	}
 }

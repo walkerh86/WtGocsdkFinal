@@ -167,12 +167,12 @@ public class FragmentCallPhone extends Fragment implements OnClickListener {
 			if (GocsdkCallbackImp.hfpStatus > 0) {
 				String phoneNumber = tv_phonenumber.getText().toString().trim();
 				if (TextUtils.isEmpty(phoneNumber)) {
-					Toast.makeText(activity, "请输入电话号码", 0).show();
+					Toast.makeText(activity, activity.getString(R.string.warning_input_number), 0).show();
 				} else {
 					callOut(phoneNumber);
 				}
 			} else {
-				Toast.makeText(activity, "请您先连接设备", Toast.LENGTH_SHORT).show();
+				Toast.makeText(activity, activity.getString(R.string.warning_connect), Toast.LENGTH_SHORT).show();
 			}
 			break;
 		case R.id.iv_delete:

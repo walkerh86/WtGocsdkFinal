@@ -262,14 +262,14 @@ public class TransparentActivity extends Activity implements OnClickListener {
 			} catch (RemoteException e1) {
 				e1.printStackTrace();
 			}
-			Toast.makeText(this, "手机端", 0).show();
+			Toast.makeText(this, this.getString(R.string.device_phone), 0).show();
 		} else {// 车机端
 			try {
 				iGocsdkService.phoneTransferBack();
 			} catch (RemoteException e1) {
 				e1.printStackTrace();
 			}
-			Toast.makeText(this, "车机端", 0).show();
+			Toast.makeText(this, this.getString(R.string.device_car), 0).show();
 		}
 	}
 

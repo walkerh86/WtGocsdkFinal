@@ -164,7 +164,7 @@ public class FragmentMailList extends Fragment {
 				if (GocsdkCallbackImp.hfpStatus > 0) {
 					clickItemCallPhone(position);
 				} else {
-					Toast.makeText(activity, "请您先连接设备", Toast.LENGTH_SHORT)
+					Toast.makeText(activity, activity.getString(R.string.warning_connect), Toast.LENGTH_SHORT)
 							.show();
 				}
 			}
@@ -193,6 +193,10 @@ public class FragmentMailList extends Fragment {
 		}*/
 	}
 	private void InitData() {
+		if(DBG){
+			dbgLoadData();
+			return;
+		}
 		systemDb = Database.getSystemDb();
 		if (GocsdkCallbackImp.hfpStatus > 0) {
 			reflashContactsData();
@@ -246,5 +250,22 @@ public class FragmentMailList extends Fragment {
 				e.printStackTrace();
 			}
 		}
+	}
+	
+	private static final boolean DBG = false;
+	private void dbgLoadData(){
+		HashMap<String, String> map = new HashMap<String, String>();
+		for(int i=0;i<10;i++){
+			map.put("itemName", "name"+i);
+			map.put("itemNum", "12345678"+i);
+			contacts.add(map);
+		}	
+		handler.postDelayed(new Runnable(){
+			@Override
+			public void run(){
+				simpleAdapter.notifyDataSetChanged();
+				handler.sendEmptyMessage(MSG_PHONE_BOOK_DONE);
+			}
+		},2000);
 	}
 }

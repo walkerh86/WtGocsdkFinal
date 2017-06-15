@@ -49,14 +49,14 @@ public class FragmentCallog extends Fragment implements OnClickListener {
 	private ImageView ib_call_out;
 	private ImageView ib_call_missed;
 	private NoScrollViewPager vp_content;
-	private String[] callLogString = { "拨出", "打进", "未接" };
+	private String[] callLogString = { "鎷ㄥ嚭", "鎵撹繘", "鏈帴" };
 	private static final int CALLLOG_IN = 3;
 	private static final int CALLLOG_OUT = 1;
 	private static final int CALLLOG_MISS = 2;
 
-	// 模拟控件
+	// 妯℃嫙鎺т欢
 	private List<TextView> textViews = new ArrayList<TextView>();
-	// 实际控件
+	// 瀹為檯鎺т欢
 	private List<ListView> listViews = new ArrayList<ListView>();
 	private View view;
 
@@ -68,8 +68,8 @@ public class FragmentCallog extends Fragment implements OnClickListener {
 	private SimpleAdapter mSimpleAdapterMiss;
 	private MyFragmentTabHost tabHost;
 	private SQLiteDatabase systemDb;
-	public final static int MSG_CALLLOG = 1;// 通话记录下载
-	public final static int MSG_CALLLOG_DONE = 2;// 通话记录下载结束
+	public final static int MSG_CALLLOG = 1;// 閫氳瘽璁板綍涓嬭浇
+	public final static int MSG_CALLLOG_DONE = 2;// 閫氳瘽璁板綍涓嬭浇缁撴潫
 	private static Handler hand = null;
 	private Handler handler = new Handler() {
 
@@ -84,7 +84,7 @@ public class FragmentCallog extends Fragment implements OnClickListener {
 						map = new HashMap<String, String>();
 						String phonenameTmp = null;
 						if (TextUtils.isEmpty(info.phonename)) {
-							phonenameTmp = "未知号码";
+							phonenameTmp = activity.getString(R.string.unkown_number);
 						} else {
 							phonenameTmp = info.phonename;
 						}
@@ -100,7 +100,7 @@ public class FragmentCallog extends Fragment implements OnClickListener {
 						map = new HashMap<String, String>();
 						String phonenameTmp = null;
 						if (TextUtils.isEmpty(info.phonename)) {
-							phonenameTmp = "未知号码";
+							phonenameTmp = activity.getString(R.string.unkown_number);
 						} else {
 							phonenameTmp = info.phonename;
 						}
@@ -116,7 +116,7 @@ public class FragmentCallog extends Fragment implements OnClickListener {
 						map = new HashMap<String, String>();
 						String phonenameTmp = null;
 						if (TextUtils.isEmpty(info.phonename)) {
-							phonenameTmp = "未知号码";
+							phonenameTmp = activity.getString(R.string.unkown_number);
 						} else {
 							phonenameTmp = info.phonename;
 						}
@@ -130,7 +130,7 @@ public class FragmentCallog extends Fragment implements OnClickListener {
 				}
 			}
 			case MSG_CALLLOG_DONE:
-				//Toast.makeText(activity, "当前通话记录下载完毕！", 0).show();
+				//Toast.makeText(activity, "褰撳墠閫氳瘽璁板綍涓嬭浇瀹屾瘯锛�", 0).show();
 				rl_downloading.setVisibility(View.GONE);
 				vp_content.setVisibility(View.VISIBLE);
 				break;
@@ -145,18 +145,18 @@ public class FragmentCallog extends Fragment implements OnClickListener {
 		return hand;
 	}
 
-	// 创建该对象时，调用该方法
+	// 鍒涘缓璇ュ璞℃椂锛岃皟鐢ㄨ鏂规硶
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		activity = (MainActivity) getActivity();
 	}
 
-	// 加载页面
+	// 鍔犺浇椤甸潰
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
-		System.out.println("你到了来没来");
+		System.out.println("浣犲埌浜嗘潵娌℃潵");
 		view = View.inflate(activity, R.layout.fragmentcalllog, null);
 		
 		ib_call_in = (ImageView) view.findViewById(R.id.ib_call_in);
@@ -198,7 +198,7 @@ public class FragmentCallog extends Fragment implements OnClickListener {
 	@Override
 	public void onStop() {
 		super.onStop();
-		// 如果该数据库不为空，关闭该数据库，并赋值为null
+		// 濡傛灉璇ユ暟鎹簱涓嶄负绌猴紝鍏抽棴璇ユ暟鎹簱锛屽苟璧嬪�间负null
 		if (systemDb != null) {
 			systemDb.close(); // close database
 			systemDb = null;
@@ -211,7 +211,7 @@ public class FragmentCallog extends Fragment implements OnClickListener {
 		LoadIncomingData();
 	}
 
-	// 切换页面
+	// 鍒囨崲椤甸潰
 	@Override
 	public void onClick(View v) {
 		switch (v.getId()) {
@@ -258,7 +258,7 @@ public class FragmentCallog extends Fragment implements OnClickListener {
 				 * CallLogInfo callLogInfo = InCallLog.get(i); map = new
 				 * HashMap<String, String>(); String phonenameTmp = null; if
 				 * (TextUtils.isEmpty(callLogInfo.phonename)) { phonenameTmp =
-				 * "未知号码"; } else { phonenameTmp = callLogInfo.phonename; }
+				 * "鏈煡鍙风爜"; } else { phonenameTmp = callLogInfo.phonename; }
 				 * map.put("itemName", phonenameTmp); map.put("itemNum",
 				 * callLogInfo.phonenumber); call_log_miss.add(map);
 				 * //mSimpleAdapterMiss.notifyDataSetChanged(); } }
@@ -289,7 +289,11 @@ public class FragmentCallog extends Fragment implements OnClickListener {
 	}
 
 	private void LoadIncomingData() {
-		if (GocsdkCallbackImp.hfpStatus > 0) {// 有设备连接
+		if(DBG){
+			dbgLoadData();
+			return;
+		}
+		if (GocsdkCallbackImp.hfpStatus > 0) {// 鏈夎澶囪繛鎺�
 			if (call_log_in.size() == 0) {
 				rl_downloading.setVisibility(View.VISIBLE);
 				vp_content.setVisibility(View.GONE);
@@ -350,7 +354,7 @@ public class FragmentCallog extends Fragment implements OnClickListener {
 		placeCall(phoneNumber2);
 	}
 
-	// 给控件填充数据
+	// 缁欐帶浠跺～鍏呮暟鎹�
 	public void paddingData(ListView listView, int position) {
 
 		switch (position) {
@@ -370,7 +374,7 @@ public class FragmentCallog extends Fragment implements OnClickListener {
 					if (GocsdkCallbackImp.hfpStatus > 0) {
 						clickItemCall(mSimpleAdapterIn, position);
 					} else {
-						Toast.makeText(activity, "请您先连接设备", Toast.LENGTH_SHORT)
+						Toast.makeText(activity, activity.getString(R.string.warning_connect), Toast.LENGTH_SHORT)
 								.show();
 					}
 				}
@@ -392,7 +396,7 @@ public class FragmentCallog extends Fragment implements OnClickListener {
 					if (GocsdkCallbackImp.hfpStatus > 0) {
 						clickItemCall(mSimpleAdapterout, position);
 					} else {
-						Toast.makeText(activity, "请您先连接设备", Toast.LENGTH_SHORT)
+						Toast.makeText(activity,  activity.getString(R.string.warning_connect), Toast.LENGTH_SHORT)
 								.show();
 					}
 
@@ -414,7 +418,7 @@ public class FragmentCallog extends Fragment implements OnClickListener {
 					if (GocsdkCallbackImp.hfpStatus > 0) {
 						clickItemCall(mSimpleAdapterMiss, position);
 					} else {
-						Toast.makeText(activity, "请您先连接设备", Toast.LENGTH_SHORT)
+						Toast.makeText(activity, activity.getString(R.string.warning_connect), Toast.LENGTH_SHORT)
 								.show();
 					}
 
@@ -425,7 +429,7 @@ public class FragmentCallog extends Fragment implements OnClickListener {
 
 	}
 
-	// 拨打正确的电话
+	// 鎷ㄦ墦姝ｇ‘鐨勭數璇�
 	private static void placeCall(String mLastNumber) {
 		if (mLastNumber.length() == 0)
 			return;
@@ -441,5 +445,22 @@ public class FragmentCallog extends Fragment implements OnClickListener {
 				e.printStackTrace();
 			}
 		}
+	}
+	
+	private static final boolean DBG = false;
+	private void dbgLoadData(){
+		HashMap<String, String> map = new HashMap<String, String>();
+		for(int i=0;i<10;i++){
+			map.put("itemName", "name"+i);
+			map.put("itemNum", "12345678"+i);
+			call_log_in.add(map);
+		}	
+		handler.postDelayed(new Runnable(){
+			@Override
+			public void run(){
+				mSimpleAdapterIn.notifyDataSetChanged();
+				handler.sendEmptyMessage(MSG_CALLLOG_DONE);
+			}
+		},2000);
 	}
 }

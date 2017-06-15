@@ -245,7 +245,7 @@ public class CallActivity extends Activity implements OnClickListener {
 			if (GocsdkCallbackImp.hfpStatus > 0) {
 				switchCarAndphone();
 			} else {
-				Toast.makeText(this, "请您先连接设备", Toast.LENGTH_SHORT).show();
+				Toast.makeText(this, this.getString(R.string.warning_connect), Toast.LENGTH_SHORT).show();
 			}
 			break;
 		case R.id.iv_bujingyin:
@@ -299,14 +299,14 @@ public class CallActivity extends Activity implements OnClickListener {
 				} catch (RemoteException e1) {
 					e1.printStackTrace();
 				}
-				Toast.makeText(this, "手机端", 0).show();
+				Toast.makeText(this, this.getString(R.string.device_phone), 0).show();
 			} else {// 车机端
 				try {
 					MainActivity.getService().phoneTransferBack();
 				} catch (RemoteException e1) {
 					e1.printStackTrace();
 				}
-				Toast.makeText(this, "车机端", 0).show();
+				Toast.makeText(this, this.getString(R.string.device_car), 0).show();
 			}
 		}
 	private void showNumber() {

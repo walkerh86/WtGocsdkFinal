@@ -119,6 +119,10 @@ public class FragmentBlueToothList extends Fragment {
 
 	private void initData() {
 		btpi.clear();
+		if(DBG){
+			dbgLoadData();
+			return;
+		}
 		deviceAdapter.notifyDataSetChanged();
 		try {
 			MainActivity.getService().getPairList();
@@ -195,4 +199,19 @@ public class FragmentBlueToothList extends Fragment {
 		public ImageView iv_isconnect;
 	}
 
+	private static final boolean DBG = false;
+	private void dbgLoadData(){
+		for(int i=0;i<10;i++){
+			BlueToothPairedInfo info = new BlueToothPairedInfo();
+			info.name = "name"+i;
+			info.address="7E:68:46:65:82:0"+i;
+			btpi.add(info);
+		}	
+		handler.postDelayed(new Runnable(){
+			@Override
+			public void run(){
+				deviceAdapter.notifyDataSetChanged();
+			}
+		},2000);
+	}
 }
