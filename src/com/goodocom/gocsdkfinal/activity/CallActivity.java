@@ -25,9 +25,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 public class CallActivity extends Activity implements OnClickListener {
-	public static final int MSG_CALL_STATUS = 0;// 拨出电话
-	public static final int Msg_CONNECT = 1;// 接通
-	public static final int MSG_INCOMING_HANGUP = 2;// 拒接
+	public static final int MSG_CALL_STATUS = 0;// 鎷ㄥ嚭鐢佃瘽
+	public static final int Msg_CONNECT = 1;// 鎺ラ��
+	public static final int MSG_INCOMING_HANGUP = 2;// 鎷掓帴
 	private RelativeLayout rl_call_pager;
 	private RelativeLayout rl_connect;
 	private TextView tv_call_people_name;
@@ -47,8 +47,8 @@ public class CallActivity extends Activity implements OnClickListener {
 	private boolean isMute = false;
 	private boolean isConnect = false;
 	
-	private String callNumber;//前台拨号
-	//private String calloutNumber;//后台拨号
+	private String callNumber;//鍓嶅彴鎷ㄥ彿
+	//private String calloutNumber;//鍚庡彴鎷ㄥ彿
 	
 	private static Handler hand = null;
 	private Handler handler = new Handler() {
@@ -66,9 +66,9 @@ public class CallActivity extends Activity implements OnClickListener {
 				finish();
 				break;
 			case Msg_CONNECT:
-				System.out.println("callNumber你是不是为空啊？"+callNumber);
+				System.out.println("callNumber="+callNumber);
 				if(callNumber!=null){
-					System.out.println("我都拨出去了，你接了没有哇");
+					//System.out.println("鎴戦兘鎷ㄥ嚭鍘讳簡锛屼綘鎺ヤ簡娌℃湁鍝�");
 					callConnect(callNumber);
 				}else{
 					Handler handler2 = InComingActivity.getHandler();
@@ -118,7 +118,7 @@ public class CallActivity extends Activity implements OnClickListener {
 				tv_connection_info.setText(incomingNumber);
 			}
 			chronometer.setFormat("%s");
-			chronometer.setBase(SystemClock.elapsedRealtime());// 复位键
+			chronometer.setBase(SystemClock.elapsedRealtime());// 澶嶄綅閿�
 			chronometer.start();
 			
 		}else{
@@ -134,20 +134,12 @@ public class CallActivity extends Activity implements OnClickListener {
 		}
 	}
 
-
-
-
-
 	protected void callOut(String phoneNumber) {
 		placeCall(phoneNumber);
 		rl_call_pager.setVisibility(View.VISIBLE);
 		rl_connect.setVisibility(View.GONE);
 		tv_call_people_name.setText(phoneNumber);
 	}
-
-
-
-
 
 	protected void callConnect(String callNumber2) {
 		rl_call_pager.setVisibility(View.GONE);
@@ -156,14 +148,14 @@ public class CallActivity extends Activity implements OnClickListener {
 		tv_connection_info.setText(callNumber2);
 		
 		chronometer.setFormat("%s");
-		chronometer.setBase(SystemClock.elapsedRealtime());// 复位键
+		chronometer.setBase(SystemClock.elapsedRealtime());// 澶嶄綅閿�
 		chronometer.start();
 	}
 
 	private void initData() {
 		Intent intent = getIntent();
 		callNumber = intent.getStringExtra("callNumber");
-		System.out.println("CallActivity中拨出电话号"+callNumber);
+		System.out.println("initData callNumber="+callNumber);
 		incomingNumber = intent.getStringExtra("incomingNumber");
 		//calloutNumber = intent.getStringExtra("calloutNumber");
 		isConnect  = intent.getBooleanExtra("isConnect", false);
@@ -174,7 +166,7 @@ public class CallActivity extends Activity implements OnClickListener {
 					Database.PhoneBookTable, callNumber);
 			if (TextUtils.isEmpty(phoneName)) {
 				tv_call_people_name.setText(callNumber);
-				System.out.println("没有名字的号码");
+				System.out.println("number with no name");
 			} else {
 				tv_call_people_name.setText(phoneName);
 			}
@@ -290,17 +282,17 @@ public class CallActivity extends Activity implements OnClickListener {
 			iv_bujingyin.setImageResource(R.drawable.btn_jianpan_jingyin_selector);
 		}
 	}
-	// 切换声音在车机端与手机端
+	// 鍒囨崲澹伴煶鍦ㄨ溅鏈虹涓庢墜鏈虹
 		private void switchCarAndphone() {
 			volume_flag = !volume_flag;
-			if (volume_flag) {// 手机端
+			if (volume_flag) {// 鎵嬫満绔�
 				try {
 					MainActivity.getService().phoneTransfer();
 				} catch (RemoteException e1) {
 					e1.printStackTrace();
 				}
 				Toast.makeText(this, this.getString(R.string.device_phone), 0).show();
-			} else {// 车机端
+			} else {// 杞︽満绔�
 				try {
 					MainActivity.getService().phoneTransferBack();
 				} catch (RemoteException e1) {
@@ -318,10 +310,10 @@ public class CallActivity extends Activity implements OnClickListener {
 		}
 	}
 
-	// 挂断
+	// 鎸傛柇
 	private void hangUp() {
 		
-		//Toast.makeText(this, "挂断", 0).show();
+		//Toast.makeText(this, "鎸傛柇", 0).show();
 		try {
 			MainActivity.getService().phoneHangUp();
 		} catch (RemoteException e) {
@@ -330,7 +322,7 @@ public class CallActivity extends Activity implements OnClickListener {
 		
 	}
 	
-	// 拨打正确的电话
+	// 鎷ㄦ墦姝ｇ‘鐨勭數璇�
 		private static void placeCall(String mLastNumber) {
 			if (mLastNumber.length() == 0)
 				return;

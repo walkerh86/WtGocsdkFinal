@@ -2,6 +2,7 @@ package com.goodocom.gocsdkfinal.fragment;
 
 import com.goodocom.gocsdkfinal.R;
 import com.goodocom.gocsdkfinal.activity.CallActivity;
+import com.goodocom.gocsdkfinal.activity.InComingActivity;
 import com.goodocom.gocsdkfinal.activity.MainActivity;
 import com.goodocom.gocsdkfinal.service.GocsdkCallbackImp;
 
@@ -23,10 +24,10 @@ import android.widget.Toast;
 
 public class FragmentCallPhone extends Fragment implements OnClickListener {
 
-	public static final int MSG_CALL_STATUS = 0;// 拨出电话
-	public static final int MSG_INCOMING_RING = 1;// 来电
-	public static final int MSG_INCOMING_HANGUP = 2;// 拒接
-	public static final int Msg_CONNECT = 3;// 接通
+	public static final int MSG_CALL_STATUS = 0;// 鎷ㄥ嚭鐢佃瘽
+	public static final int MSG_INCOMING_RING = 1;// 鏉ョ數
+	public static final int MSG_INCOMING_HANGUP = 2;// 鎷掓帴
+	public static final int Msg_CONNECT = 3;// 鎺ラ��
 	private MainActivity activity;
 	public static String inComingNumber;
 	public static String callOutNumber;
@@ -164,6 +165,10 @@ public class FragmentCallPhone extends Fragment implements OnClickListener {
 			sb.append("#");
 			break;
 		case R.id.iv_callout:
+			if(DBG_CALL){
+				startTestActivity();
+				break;
+			}
 			if (GocsdkCallbackImp.hfpStatus > 0) {
 				String phoneNumber = tv_phonenumber.getText().toString().trim();
 				if (TextUtils.isEmpty(phoneNumber)) {
@@ -188,7 +193,7 @@ public class FragmentCallPhone extends Fragment implements OnClickListener {
 		placeCall(phoneNumber2);
 	}
 
-	// 拨打正确的电话
+	// 鎷ㄦ墦姝ｇ‘鐨勭數璇�
 	private static void placeCall(String mLastNumber) {
 		if (mLastNumber.length() == 0)
 			return;
@@ -204,5 +209,25 @@ public class FragmentCallPhone extends Fragment implements OnClickListener {
 				e.printStackTrace();
 			}
 		}
+	}
+	
+	private static final boolean DBG_CALL = false;
+	private void startTestActivity(){
+		//startIncallActivity();
+		startCallActivity();
+	}
+	
+	private void startCallActivity(){
+		Intent intent = new Intent(getActivity(),CallActivity.class);
+		intent.putExtra("callNumber", "10010");
+		intent.putExtra("isConnect", false);
+		getActivity().startActivity(intent);
+	}
+	
+	private void startIncallActivity(){
+		Intent intent = new Intent(getActivity(),InComingActivity.class);
+		intent.putExtra("incomingNumber", "10010");
+		startActivity(intent);
+
 	}
 }

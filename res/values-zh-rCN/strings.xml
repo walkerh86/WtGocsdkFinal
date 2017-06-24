@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">蓝牙伴侣</string>
+    <string name="action_settings">设置</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="warning_connect">请您先连接设备</string>
+    <string name="device_phone">手机端</string>
+    <string name="device_car">车机端</string>
+    <string name="search_done">搜索完成</string>
+    <string name="device_connected">已有设备连接</string>
+    <string name="warning_input_number">请输入电话号码</string>
+    <string name="unkown_number">未知号码</string>
+    <string name="out_going">正在呼叫...</string>
+    <string name="incoming">来电</string>
+
+</resources>

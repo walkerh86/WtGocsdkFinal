@@ -9,8 +9,8 @@
     <FrameLayout
         android:id="@+id/rl_callinfo"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="2" >
+        android:layout_height="wrap_content"
+        android:layout_weight="0" >
 
         <RelativeLayout
             android:id="@+id/rl_call_pager"
@@ -23,7 +23,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerHorizontal="true"
-                android:text="正在呼叫..."
+                android:paddingTop="4px"
+                android:text="@string/out_going"
                 android:textColor="#fff"
                 android:textSize="20sp" />
 
@@ -33,7 +34,7 @@
                 android:layout_height="wrap_content"
                 android:layout_below="@id/tv_callstatus"
                 android:layout_centerHorizontal="true"
-                android:layout_marginTop="10dp"
+                android:layout_marginTop="4dp"
                 android:textColor="#fff"
                 android:textSize="23sp"  />
         </RelativeLayout>
@@ -83,12 +84,12 @@
         android:id="@+id/ll_number"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="4"
+        android:layout_weight="1"
         android:orientation="vertical"
-        android:paddingLeft="150dp"
-        android:paddingRight="150dp"
-        android:paddingTop="10dp"
-        android:paddingBottom="10dp"
+        android:paddingLeft="0dp"
+        android:paddingRight="0dp"
+        android:paddingTop="0dp"
+        android:paddingBottom="0dp"
         android:visibility="invisible" >
 
         <LinearLayout
@@ -207,8 +208,7 @@
     <LinearLayout
         android:id="@+id/ll_action"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="2"
+        android:layout_height="64px"
         android:orientation="horizontal" >
 
         <ImageView
