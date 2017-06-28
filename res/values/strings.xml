@@ -13,5 +13,9 @@
     <string name="unkown_number">Unkown number</string>
     <string name="out_going">Calling</string>
     <string name="incoming">Incoming</string>
-
+	<string name="bt_auto_connect">Auto connect</string>
+    <string name="bt_auto_answer">Auto Answer</string>
+    <string name="device_name">Device name</string>
+    <string name="pin_code">PIN code</string>
+    <string name="bt_switch">bt switch</string>
 </resources>

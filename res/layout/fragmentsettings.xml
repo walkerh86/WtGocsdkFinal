@@ -15,7 +15,7 @@
         android:layout_width="0dp"
         android:layout_weight="1"
         android:layout_height="wrap_content"
-        android:text="设备名"
+        android:text="@string/device_name"
         android:textColor="#FFF"
         android:textSize="25sp"/>
     <EditText 
@@ -35,7 +35,7 @@
         android:layout_width="0dp"
         android:layout_weight="1"
         android:layout_height="wrap_content"
-        android:text="PIN码"
+        android:text="@string/pin_code"
         android:textSize="25sp"
         android:textColor="#FFF"/>
     <EditText 
@@ -55,7 +55,7 @@
             android:layout_height="wrap_content"
             android:textColor="#FFF"
             android:textSize="23sp"
-            android:text="蓝牙自动连接"/>
+            android:text="@string/bt_auto_connect"/>
         <ImageView 
             android:id="@+id/auto_connect_switch"
             android:layout_width="wrap_content"
@@ -70,9 +70,24 @@
             android:layout_height="wrap_content"
             android:textColor="#FFF"
             android:textSize="23sp"
-            android:text="蓝牙自动接听"/>
+            android:text="@string/bt_auto_answer"/>
 	    <ImageView 
 	        android:id="@+id/auto_answer_switch"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:src="@drawable/ico_4158_guan"
+	        android:layout_alignParentRight="true"/>
+	</RelativeLayout>
+	<RelativeLayout 
+	    style="@style/SettingsLineStyle">
+	    <TextView 
+	        android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="#FFF"
+            android:textSize="23sp"
+            android:text="@string/bt_switch"/>
+	    <ImageView 
+	        android:id="@+id/bt_switch"
 	        android:layout_width="wrap_content"
 	        android:layout_height="wrap_content"
 	        android:src="@drawable/ico_4158_guan"

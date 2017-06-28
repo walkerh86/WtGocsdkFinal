@@ -15,7 +15,17 @@ public class GocsdkServiceImp extends IGocsdkService.Stub {
 	private void write(String str){
 		service.write(str);
 	}
-	
+
+	@Override
+	public void openBt() throws RemoteException{
+		write(Commands.BT_OPEN);
+	}
+
+	@Override
+	public void closeBt() throws RemoteException{
+		write(Commands.BT_CLOSE);
+	}
+
 	@Override
 	public void restBluetooth() throws RemoteException{
 		write(Commands.RESET_BLUE);

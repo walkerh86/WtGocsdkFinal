@@ -1,6 +1,9 @@
 package com.goodocom.gocsdkfinal;
 
 public class Commands {
+	public static final String BT_OPEN = "P1";
+	public static final String BT_CLOSE = "P0";
+
 	public static final String COMMAND_HEAD = "AT#";
 	/**
 	 * ERROR

@@ -81,6 +81,10 @@ public class FragmentSetting extends Fragment implements OnClickListener {
 				.findViewById(R.id.auto_answer_switch);
 		auto_answer_switch.setOnClickListener(this);
 		auto_connect_switch.setOnClickListener(this);
+		
+		mBtSwitch = (ImageView)view.findViewById(R.id.bt_switch);
+		mBtSwitch.setOnClickListener(this);
+		
 		if(MainActivity.mLocalName!=null){
 			et_device_name.setText(MainActivity.mLocalName);
 		}
@@ -166,6 +170,30 @@ public class FragmentSetting extends Fragment implements OnClickListener {
 		case R.id.auto_answer_switch:
 			isAnswerSwitch();
 			break;
+		case R.id.bt_switch:
+			setBtSwitch();
+			break;
+		}
+	}
+
+	private boolean isBtSwitch = false;
+	private ImageView mBtSwitch;
+	private void setBtSwitch(){
+		isBtSwitch = !isBtSwitch;
+		if (isBtSwitch) {
+			mBtSwitch.setImageResource(R.drawable.ico_4157_kai);
+			try {
+				MainActivity.getService().openBt();
+			} catch (RemoteException e) {
+				e.printStackTrace();
+			}
+		} else {
+			mBtSwitch.setImageResource(R.drawable.ico_4158_guan);
+			try {
+				MainActivity.getService().closeBt();
+			} catch (RemoteException e) {
+				e.printStackTrace();
+			}
 		}
 	}
 

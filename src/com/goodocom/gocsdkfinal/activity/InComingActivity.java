@@ -5,12 +5,15 @@ import com.goodocom.gocsdkfinal.domain.BlueToothPairedInfo;
 
 import android.app.Activity;
 import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.PowerManager;
 import android.os.RemoteException;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -22,6 +25,8 @@ public class InComingActivity extends Activity implements OnClickListener {
 	private ImageView iv_hangup;
 	private TextView tv_incoming_phonenumber;
 	private String incomingNumber;
+	
+	private PowerManager.WakeLock mWakeLock;
 	
 	private static Handler hand = null;
 	private Handler handler = new Handler() {
@@ -49,6 +54,13 @@ public class InComingActivity extends Activity implements OnClickListener {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		
+		getWindow().addFlags(
+		        WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED
+		        | WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD
+		        | WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON
+		        | WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON);
+		        
 		setContentView(R.layout.activity_incoming);
 		Intent intent = getIntent();
 		incomingNumber = intent.getStringExtra("incomingNumber");
@@ -59,6 +71,18 @@ public class InComingActivity extends Activity implements OnClickListener {
 		iv_connect.setOnClickListener(this);
 		iv_hangup.setOnClickListener(this);
 		hand = handler;
+		
+		PowerManager powerManager = (PowerManager) getSystemService(Context.POWER_SERVICE);
+		mWakeLock = powerManager.newWakeLock(PowerManager.FULL_WAKE_LOCK|PowerManager.ON_AFTER_RELEASE, "incoming");
+		mWakeLock.acquire();
+	}
+
+	@Override
+	public void onDestroy() {
+		super.onDestroy();
+		if(mWakeLock.isHeld()){
+			mWakeLock.release();
+		}
 	}
 
 	@Override

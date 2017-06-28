@@ -36,7 +36,7 @@
     
     <style name="SettingsLineStyle">
        <item name="android:layout_width">match_parent</item>
-       <item name="android:layout_height">56px</item>
+       <item name="android:layout_height">52px</item>
        <item name="android:paddingTop">6px</item>
        <item name="android:paddingBottom">6px</item>
     </style>

@@ -19,6 +19,7 @@ import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Handler;
 import android.os.Message;
+import android.os.PowerManager;
 import android.os.RemoteCallbackList;
 import android.os.RemoteException;
 import android.os.SystemClock;
@@ -32,19 +33,22 @@ public class CommandParser extends GocsdkCommon {
 	private RemoteCallbackList<IGocsdkCallback> callbacks;
 	private Context mContext;
 	private static boolean fromBehind = false;
+	
 	public CommandParser(RemoteCallbackList<IGocsdkCallback> callbacks,
 			GocsdkService gocsdkService) {
 		this.callbacks = callbacks;
 		mContext = gocsdkService;
+		mServiceHandler = gocsdkService.getHandler();
 	}
 	private byte[] serialBuffer = new byte[1024];
 	private int count = 0;
 	private void onSerialCommand(String cmd) {
-		System.out.println("接收到命令：" + cmd);
-		if (GocsdkService.isBehind) {
+		//System.out.println("鎺ユ敹鍒板懡浠わ細" + cmd);
+		Log.i("hcj.serial","onSerialCommand:"+cmd);
+		if (/*GocsdkService.isBehind*/false) {
 			
-			System.out.println("从后台");
-			if (cmd.startsWith(Commands.IND_INCOMING)) {// 来电
+			System.out.println("浠庡悗鍙�");
+			if (cmd.startsWith(Commands.IND_INCOMING)) {// 鏉ョ數
 				fromBehind = true;
 				Intent intent = new Intent();
 				intent.setComponent(new ComponentName(
@@ -56,7 +60,7 @@ public class CommandParser extends GocsdkCommon {
 						| Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);
 				mContext.startActivity(intent);
 				
-			} else if (cmd.startsWith(Commands.IND_OUTGOING_TALKING_NUMBER)) {// 拨出
+			} else if (cmd.startsWith(Commands.IND_OUTGOING_TALKING_NUMBER)) {// 鎷ㄥ嚭
 				fromBehind = true;
 				Intent intent = new Intent();
 				intent.setComponent(new ComponentName(
@@ -69,46 +73,49 @@ public class CommandParser extends GocsdkCommon {
 				mContext.startActivity(intent);
 			}
 		} else {
-			System.out.println("从前台");
+			//System.out.println("浠庡墠鍙�");
+			if(handleGlobalCmd(cmd)){
+				return;
+			}
 			int i = callbacks.beginBroadcast();
 			while (i > 0) {
 				i--;
 				IGocsdkCallback cbk = callbacks.getBroadcastItem(i);
 				try {
-					if (cmd.startsWith(Commands.IND_HFP_CONNECTED)) {// HFP已连接:::IB
-						System.out.println("蓝牙连接命令：" + cmd);
+					if (cmd.startsWith(Commands.IND_HFP_CONNECTED)) {// HFP宸茶繛鎺�:::IB
+						System.out.println("钃濈墮杩炴帴鍛戒护锛�" + cmd);
 						cbk.onHfpConnected();
-					} else if (cmd.startsWith(Commands.IND_HFP_DISCONNECTED)) {// HFP已断开:::IA
+					} else if (cmd.startsWith(Commands.IND_HFP_DISCONNECTED)) {// HFP宸叉柇寮�:::IA
 						cbk.onHfpDisconnected();
-					} else if (cmd.startsWith(Commands.IND_CALL_SUCCEED)) {// 去电:::IC[numberlen:2][number]
+					} else if (cmd.startsWith(Commands.IND_CALL_SUCCEED)) {// 鍘荤數:::IC[numberlen:2][number]
 						
 						if (cmd.length() < 4) {
 							cbk.onCallSucceed("");
 						} else {
 							cbk.onCallSucceed(cmd.substring(4));
 						}
-					} else if (cmd.startsWith(Commands.IND_INCOMING)) {// 来电:::ID[numberlen:2][number]
-						System.out.println("来电命令：" + cmd);
+					} else if (cmd.startsWith(Commands.IND_INCOMING)) {// 鏉ョ數:::ID[numberlen:2][number]
+						System.out.println("鏉ョ數鍛戒护锛�" + cmd);
 						if (cmd.length() < 2) {
 							cbk.onIncoming("");
 						} else {
 							cbk.onIncoming(cmd.substring(2));
 						}
-					} else if (cmd.startsWith(Commands.IND_HANG_UP)) {// 挂机:::IF[numberlen:2][number]
-						System.out.println("挂断命令"+cmd+"fromBehind="+fromBehind);
+					} else if (cmd.startsWith(Commands.IND_HANG_UP)) {// 鎸傛満:::IF[numberlen:2][number]
+						System.out.println("鎸傛柇鍛戒护"+cmd+"fromBehind="+fromBehind);
 						if(fromBehind){
 							Handler handler = TransparentActivity.getHandler();
 							if(handler!=null){
 								handler.sendEmptyMessage(TransparentActivity.MSG_HANGUP_PHONE);
-								System.out.println("挂断命令发了没有哇");
+								System.out.println("鎸傛柇鍛戒护鍙戜簡娌℃湁鍝�");
 							}
 						}else{
 							cbk.onHangUp();
 						}
 						fromBehind =false;
 						
-					} else if (cmd.startsWith(Commands.IND_TALKING)) {// 通话中:::IG[numberlen:2][number]
-						System.out.println("通话命令=" + cmd);
+					} else if (cmd.startsWith(Commands.IND_TALKING)) {// 閫氳瘽涓�:::IG[numberlen:2][number]
+						System.out.println("閫氳瘽鍛戒护=" + cmd);
 						
 						if(fromBehind){
 							Handler handler = TransparentActivity.getHandler();
@@ -122,23 +129,23 @@ public class CommandParser extends GocsdkCommon {
 								cbk.onTalking(cmd.substring(4));
 							}
 						}
-					} else if (cmd.startsWith(Commands.IND_RING_START)) {// 开始响铃
+					} else if (cmd.startsWith(Commands.IND_RING_START)) {// 寮�濮嬪搷閾�
 						cbk.onRingStart();
-					} else if (cmd.startsWith(Commands.IND_RING_STOP)) {// 停止响铃
+					} else if (cmd.startsWith(Commands.IND_RING_STOP)) {// 鍋滄鍝嶉搩
 						cbk.onRingStop();
 					} else if (cmd.startsWith(Commands.IND_HF_LOCAL)) {//
 						cbk.onHfpLocal();
-					} else if (cmd.startsWith(Commands.IND_HF_REMOTE)) {// 蓝牙接听
+					} else if (cmd.startsWith(Commands.IND_HF_REMOTE)) {// 钃濈墮鎺ュ惉
 						cbk.onHfpRemote();
-					} else if (cmd.startsWith(Commands.IND_IN_PAIR_MODE)) {// 进入配对模式:::II
+					} else if (cmd.startsWith(Commands.IND_IN_PAIR_MODE)) {// 杩涘叆閰嶅妯″紡:::II
 						cbk.onInPairMode();
-					} else if (cmd.startsWith(Commands.IND_EXIT_PAIR_MODE)) {// 退出配对模式
+					} else if (cmd.startsWith(Commands.IND_EXIT_PAIR_MODE)) {// 閫�鍑洪厤瀵规ā寮�
 						cbk.onExitPairMode();
-					} else if (cmd.startsWith(Commands.IND_INIT_SUCCEED)) {// 上电初始化成功:::IS
+					} else if (cmd.startsWith(Commands.IND_INIT_SUCCEED)) {// 涓婄數鍒濆鍖栨垚鍔�:::IS
 						cbk.onInitSucceed();
-					} else if (cmd.startsWith(Commands.IND_MUSIC_PLAYING)) {// 音乐播放
+					} else if (cmd.startsWith(Commands.IND_MUSIC_PLAYING)) {// 闊充箰鎾斁
 						cbk.onMusicPlaying();
-					} else if (cmd.startsWith(Commands.IND_MUSIC_STOPPED)) {// 音乐停止
+					} else if (cmd.startsWith(Commands.IND_MUSIC_STOPPED)) {// 闊充箰鍋滄
 						cbk.onMusicStopped();
 					} else if (cmd.startsWith(Commands.IND_VOICE_CONNECTED)) {
 						// cbk.onVoiceConnected();
@@ -170,7 +177,7 @@ public class CommandParser extends GocsdkCommon {
 							cbk.onAvStatus(Integer.parseInt(cmd.substring(3, 4)));
 						}
 					} else if (cmd.startsWith(Commands.IND_HFP_STATUS)) {
-						System.out.println("蓝牙状态命令=" + cmd);
+						System.out.println("钃濈墮鐘舵�佸懡浠�=" + cmd);
 						if (cmd.length() < 3) {
 							// Log.e(TAG, cmd +" ==== error");
 						} else {
@@ -201,7 +208,7 @@ public class CommandParser extends GocsdkCommon {
 						cbk.onA2dpDisconnected();
 					} else if (cmd
 							.startsWith(Commands.IND_CURRENT_AND_PAIR_LIST)) {
-						System.out.println("获取配对列表的命令" + cmd);
+						System.out.println("鑾峰彇閰嶅鍒楄〃鐨勫懡浠�" + cmd);
 						if (cmd.length() < 15) {
 							// Log.e(TAG, cmd + "====error");
 						} else if (cmd.length() == 15) {
@@ -253,12 +260,12 @@ public class CommandParser extends GocsdkCommon {
 					 * System.arraycopy(bytes, 6 + nameLen, buffer, 0, numLen);
 					 * num = new String(buffer); } else { num = ""; }
 					 * cbk.onPhoneBook(name, num); } }
-					 */else if (cmd.startsWith(Commands.IND_PHONE_BOOK_DONE)) {// 更新联系人完成
+					 */else if (cmd.startsWith(Commands.IND_PHONE_BOOK_DONE)) {// 鏇存柊鑱旂郴浜哄畬鎴�
 						cbk.onPhoneBookDone();
 					} else if (cmd.startsWith(Commands.IND_SIM_DONE)) {
 						cbk.onSimDone();
 					} else if (cmd.startsWith(Commands.IND_CALLLOG_DONE)) {
-						System.out.println("结束命令你发几次"+cmd);
+						System.out.println("缁撴潫鍛戒护浣犲彂鍑犳"+cmd);
 						cbk.onCalllogDone();
 					} else if (cmd.startsWith(Commands.IND_CALLLOG)) {
 						System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
@@ -292,14 +299,14 @@ public class CommandParser extends GocsdkCommon {
 						cbk.onLocalAddress(cmd.substring(2));
 					} else if (cmd
 							.startsWith(Commands.IND_OUTGOING_TALKING_NUMBER)) {
-						System.out.println("拨出电话的信息：" + cmd);
+						System.out.println("鎷ㄥ嚭鐢佃瘽鐨勪俊鎭細" + cmd);
 						if (cmd.length() <= 2) {
 							cbk.onOutGoingOrTalkingNumber("");
 						} else {
 							cbk.onOutGoingOrTalkingNumber(cmd.substring(2));
 						}
 					} else if (cmd.startsWith(Commands.IND_MUSIC_INFO_STRING)) {
-						System.out.println("蓝牙音乐命令：" + cmd);
+						System.out.println("钃濈墮闊充箰鍛戒护锛�" + cmd);
 						if (cmd.length() <= 2) {
 							// Log.e(TAG, cmd+"===error");
 						} else {
@@ -387,5 +394,31 @@ public class CommandParser extends GocsdkCommon {
 		for (byte b : data) {
 			onByte(b);
 		}
+	}
+
+	private Handler mServiceHandler;
+	private boolean handleGlobalCmd(String cmd){
+		Log.i("hcj.serial","handleGlobalCmd:"+cmd);
+		if (cmd.startsWith(Commands.IND_INCOMING)) {
+			String number = "";
+			if (cmd.length() > 2) {
+				number = cmd.substring(2);
+			}
+			mServiceHandler.sendMessage(mServiceHandler.obtainMessage(GocsdkService.MSG_CALL_INCOMING,number));
+			GocsdkCallbackImp.hfpStatus = 4;
+			return true;
+		}else if (cmd.startsWith(Commands.IND_HANG_UP)) {
+			GocsdkCallbackImp.hfpStatus = 7;
+			return true;
+		}
+		/*else if (cmd.startsWith(Commands.IND_OUTGOING_TALKING_NUMBER)) {
+
+			if (cmd.length() <= 2) {
+				cbk.onOutGoingOrTalkingNumber("");
+			} else {
+				cbk.onOutGoingOrTalkingNumber(cmd.substring(2));
+			}
+		}*/
+		return false;
 	}
 }

@@ -9,18 +9,24 @@ import com.goodocom.gocsdk.IGocsdkCallback;
 import com.goodocom.gocsdk.SerialPort;
 import com.goodocom.gocsdkfinal.Commands;
 import com.goodocom.gocsdkfinal.Config;
-
+import com.goodocom.gocsdkfinal.activity.CallActivity;
+import com.goodocom.gocsdkfinal.activity.InComingActivity;
+import com.goodocom.gocsdkfinal.db.Database;
 
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
 import android.net.LocalSocket;
 import android.net.LocalSocketAddress;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
+import android.os.PowerManager;
 import android.os.RemoteCallbackList;
 import android.util.Log;
 
+import android.text.TextUtils;
+import android.database.sqlite.SQLiteDatabase;
 
 public class GocsdkService extends Service {
 	public static final String TAG = "GocsdkService";
@@ -38,13 +44,18 @@ public class GocsdkService extends Service {
 	
 	public static boolean isBehind = false;
 
+	private PowerManager.WakeLock mWakeLock;
+
 	@Override
 	public void onCreate() {
 		callbacks = new RemoteCallbackList<IGocsdkCallback>();
+		hand = handler;
 		parser = new CommandParser(callbacks,this);
 		handler.sendEmptyMessage(MSG_START_SERIAL);
-		hand = handler;
 		super.onCreate();
+
+            PowerManager powerManager = (PowerManager) getSystemService(Context.POWER_SERVICE);
+            mWakeLock = powerManager.newWakeLock(PowerManager.FULL_WAKE_LOCK |PowerManager.ON_AFTER_RELEASE, "incoming");
 	}
 	
 	@Override
@@ -75,6 +86,10 @@ public class GocsdkService extends Service {
 			} else if (msg.what == MSG_SERIAL_RECEIVED) {
 				byte[] data = (byte[]) msg.obj;
 				parser.onBytes(data);
+			}else if(msg.what == MSG_CALL_INCOMING){
+				startInCallActivity((String) msg.obj);
+			}else if(msg.what == MSG_CALL_HUANGUP){
+				
 			}
 		};
 	};
@@ -171,6 +186,7 @@ public class GocsdkService extends Service {
 
 	public void write(String str) {
 		if (serialThread == null) return;
+		Log.i("hcj.serial","write cmd:"+str);
 		serialThread.write((Commands.COMMAND_HEAD + str + "\r\n").getBytes());
 	}
 
@@ -184,4 +200,42 @@ public class GocsdkService extends Service {
 		callbacks.unregister(callback);
 	}
 
+
+	public static final int MSG_CALL_INCOMING = 10;
+	public static final int MSG_CALL_HUANGUP = 11;
+
+	private void startInCallActivity(String phonenum){
+		String phonename = "";
+		SQLiteDatabase mDbDataBase = Database.getSystemDb();
+		Database.createTable(mDbDataBase,
+				Database.Sql_create_phonebook_tab);
+		phonename = Database.queryPhoneName(mDbDataBase,
+				Database.PhoneBookTable, phonenum);// 根据号码查询联系人
+		Intent intent = new Intent(this,InComingActivity.class);
+		if (TextUtils.isEmpty(phonename)) {
+			intent.putExtra("incomingNumber", phonenum);
+		} else {
+			intent.putExtra("incomingNumber", phonename);
+		}
+		intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_SINGLE_TOP);
+		startActivity(intent);
+		
+		//mWakeLock.acquire();
+	}
+
+	private void callhangUp(){
+		Handler handler = InComingActivity.getHandler();
+		if(handler != null){
+			handler.sendEmptyMessage(InComingActivity.MSG_INCOMINNG_HANGUP);
+		}
+		handler = CallActivity.getHandler();
+		if(handler != null){
+			handler.sendEmptyMessage(CallActivity.MSG_INCOMING_HANGUP);
+		}
+		/*
+		if(mWakeLock.isHeld()){
+			mWakeLock.release();
+		}*/
+	}
+	
 }

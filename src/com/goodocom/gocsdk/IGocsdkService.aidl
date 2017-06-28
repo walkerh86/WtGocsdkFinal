@@ -3,6 +3,9 @@ package com.goodocom.gocsdk;
 import com.goodocom.gocsdk.IGocsdkCallback;
 
 interface IGocsdkService {
+	void openBt();
+	void closeBt();
+	
 	//蓝牙状态回调注册去注销
 	void registerCallback(IGocsdkCallback callback);
 	// 注销蓝牙状态
