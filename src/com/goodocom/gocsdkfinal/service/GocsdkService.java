@@ -215,6 +215,7 @@ public class GocsdkService extends Service {
 	
 	private void initSerial(){
 		if(mSettings.isOpen()){
+			//should try more times
 			write(Commands.BT_OPEN);
 		}
 	}
@@ -236,6 +237,8 @@ public class GocsdkService extends Service {
 	public static final int MSG_IND_CURRENT_DEVICE_NAME = 14;
 	public static final int MSG_IND_CURRENT_PIN_CODE = 15;
 	public static final int MSG_IND_INIT_SUCCEED = 16;
+	public static final int MSG_IND_HFP_CONNECTED = 17;
+	public static final int MSG_IND_HFP_DISCONNECTED = 17;
 	
 	public static String mLocalName = null;
 	public static String mPinCode = null;

@@ -76,6 +76,8 @@ public class MainActivity extends BaseActivity {
 	public static final int MSG_UPDATE_MISSED_CALLLOG = 27;
 	public static final int MSG_UPDATE_CALLLOG_DONE = 28;
 
+	public static final int MSG_PHONEBOOK_NOT_SHARE = 29;
+
 	public static String mComingPhoneNum = null; // 鏉ョ數鍙风爜
 	public static String mCalloutPhoneNum = null;// 鎷ㄥ嚭鍙风爜
 	public static String mLocalName = null;
@@ -341,6 +343,9 @@ public class MainActivity extends BaseActivity {
 			case MSG_DEVICEPINCODE:// 钃濈墮璁惧鐨凱IN鐮�
 				String pincode = (String) msg.obj;
 				mPinCode = pincode;
+				break;
+			case MSG_PHONEBOOK_NOT_SHARE:
+				Toast.makeText(MainActivity.this, MainActivity.this.getString(R.string.warning_share_contacts_fail),Toast.LENGTH_LONG).show();
 				break;
 			/**
 			 * case MSG_PAIRLIST:// 灏嗚澶囨坊鍔犲埌閰嶅鍒楄〃涓� BtDevices btPairList =

@@ -491,4 +491,10 @@ public class GocsdkCallbackImp extends IGocsdkCallback.Stub {
 		//EventBus.getDefault().post(new MessageTextEvent(content));
 	}
 
+	@Override
+	public void onPhoneBookNotShare() throws RemoteException {
+		Handler mainHandler = MainActivity.getHandler();
+		mainHandler.sendEmptyMessage(MainActivity.MSG_PHONEBOOK_NOT_SHARE);
+	}
+
 }

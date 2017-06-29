@@ -18,4 +18,6 @@
     <string name="device_name">Device name</string>
     <string name="pin_code">PIN code</string>
     <string name="bt_switch">bt switch</string>
+    <string name="warning_set_share_contacts">Share contacts by bluetooth must be set</string>
+    <string name="warning_share_contacts_fail">Share contacts by bluetooth is not set</string>
 </resources>

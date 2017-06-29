@@ -36,8 +36,8 @@
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent" 
-        android:paddingLeft="80dp"
-        android:paddingRight="80dp">
+        android:paddingLeft="20dp"
+        android:paddingRight="20dp">
 
         <RelativeLayout
             android:id="@+id/rl_downloading"
@@ -60,11 +60,23 @@
                 android:layout_centerHorizontal="true"
                 android:layout_marginBottom="20dp"
                 android:src="@drawable/load_ico" />
+
+            <TextView
+                android:id="@+id/hint"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/flag_center"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="10dp"
+                android:textColor="#ffffffff"
+                android:textSize="22sp"
+                android:text="@string/warning_set_share_contacts" />
+                
         </RelativeLayout>
 
         <com.goodocom.gocsdkfinal.view.NoScrollViewPager
             android:id="@+id/vp_content"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:visibility="gone" >
         </com.goodocom.gocsdkfinal.view.NoScrollViewPager>

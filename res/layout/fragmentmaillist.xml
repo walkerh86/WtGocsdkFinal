@@ -24,6 +24,18 @@
             android:layout_centerHorizontal="true"
             android:layout_marginBottom="20dp"
             android:src="@drawable/load_ico" />
+
+            <TextView
+                android:id="@+id/hint"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/flag_center"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="10dp"
+                android:textColor="#ffffffff"
+                android:textSize="22sp"
+                android:text="@string/warning_set_share_contacts" />
+            
     </RelativeLayout>
 
     <ListView

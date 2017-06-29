@@ -18,5 +18,7 @@
     <string name="device_name">设备名</string>
     <string name="pin_code">PIN码</string>
     <string name="bt_switch">蓝牙开关</string>
+    <string name="warning_set_share_contacts">请注意打开蓝牙共享联系人！</string>
+    <string name="warning_share_contacts_fail">蓝牙共享联系人没有打开！</string>
 
 </resources>

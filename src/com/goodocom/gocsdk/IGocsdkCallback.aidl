@@ -58,4 +58,6 @@ interface IGocsdkCallback{
 	void onProfileEnbled(in boolean[] enabled);
 	void onMessageInfo(String content_order,String read_status,String time,String name,String num,String title);
 	void onMessageContent(String content);
+	
+	void onPhoneBookNotShare ();
 }

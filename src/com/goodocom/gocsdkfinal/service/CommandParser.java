@@ -355,7 +355,9 @@ public class CommandParser extends GocsdkCommon {
 						// TODO:OK ind
 					} else if (cmd.startsWith(Commands.IND_ERROR)) {
 
-					} else {
+					} else if (cmd.startsWith(Commands.IND_SET_PHONE_BOOK)) {
+						cbk.onPhoneBookNotShare();
+					}else {
 
 					}
 				} catch (RemoteException e) {
@@ -437,6 +439,12 @@ public class CommandParser extends GocsdkCommon {
 		}else if (cmd.startsWith(Commands.IND_TALKING)) {
 			mServiceHandler.sendMessage(mServiceHandler.obtainMessage(GocsdkService.MSG_IND_TALKING));
 			return true;
+		}else if (cmd.startsWith(Commands.IND_HFP_CONNECTED)) {
+			GocsdkCallbackImp.hfpStatus = 1;
+			//mServiceHandler.sendMessage(mServiceHandler.obtainMessage(GocsdkService.MSG_IND_HFP_CONNECTED));
+		}else if (cmd.startsWith(Commands.IND_HFP_DISCONNECTED)) {
+			GocsdkCallbackImp.hfpStatus = 0;
+			//mServiceHandler.sendMessage(mServiceHandler.obtainMessage(GocsdkService.MSG_IND_HFP_DISCONNECTED));
 		}
 		/*else if (cmd.startsWith(Commands.IND_OUTGOING_TALKING_NUMBER)) {
 
