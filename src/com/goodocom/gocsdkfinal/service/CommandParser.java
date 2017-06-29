@@ -404,11 +404,38 @@ public class CommandParser extends GocsdkCommon {
 			if (cmd.length() > 2) {
 				number = cmd.substring(2);
 			}
-			mServiceHandler.sendMessage(mServiceHandler.obtainMessage(GocsdkService.MSG_CALL_INCOMING,number));
+			mServiceHandler.sendMessage(mServiceHandler.obtainMessage(GocsdkService.MSG_IND_INCOMING,number));
 			GocsdkCallbackImp.hfpStatus = 4;
 			return true;
 		}else if (cmd.startsWith(Commands.IND_HANG_UP)) {
+			mServiceHandler.sendMessage(mServiceHandler.obtainMessage(GocsdkService.MSG_IND_HANG_UP));
 			GocsdkCallbackImp.hfpStatus = 7;
+			return true;
+		}else if (cmd.startsWith(Commands.IND_OUTGOING_TALKING_NUMBER)) {
+			String number = "";
+			if (cmd.length() > 2) {
+				number = cmd.substring(2);
+			}
+			mServiceHandler.sendMessage(mServiceHandler.obtainMessage(GocsdkService.MSG_IND_OUTGOING_TALKING_NUMBER,number));
+			return true;
+		}else if (cmd.startsWith(Commands.IND_CURRENT_DEVICE_NAME)) {
+			if (cmd.length() < 3) {
+				
+			} else {
+				mServiceHandler.sendMessage(mServiceHandler.obtainMessage(GocsdkService.MSG_IND_CURRENT_DEVICE_NAME,cmd.substring(2)));
+			}
+			//return true;
+		}else if (cmd.startsWith(Commands.IND_CURRENT_PIN_CODE)) {
+			if (cmd.length() < 3) {
+			} else {
+				mServiceHandler.sendMessage(mServiceHandler.obtainMessage(GocsdkService.MSG_IND_CURRENT_PIN_CODE,cmd.substring(2)));
+			}
+			//return true;
+		}else if (cmd.startsWith(Commands.IND_INIT_SUCCEED)) {
+			mServiceHandler.sendMessage(mServiceHandler.obtainMessage(GocsdkService.MSG_IND_INIT_SUCCEED));
+			return true;
+		}else if (cmd.startsWith(Commands.IND_TALKING)) {
+			mServiceHandler.sendMessage(mServiceHandler.obtainMessage(GocsdkService.MSG_IND_TALKING));
 			return true;
 		}
 		/*else if (cmd.startsWith(Commands.IND_OUTGOING_TALKING_NUMBER)) {

@@ -1,6 +1,7 @@
 package com.goodocom.gocsdkfinal.activity;
 
 import com.goodocom.gocsdkfinal.R;
+import com.goodocom.gocsdkfinal.Ringer;
 import com.goodocom.gocsdkfinal.domain.BlueToothPairedInfo;
 
 import android.app.Activity;
@@ -27,6 +28,7 @@ public class InComingActivity extends Activity implements OnClickListener {
 	private String incomingNumber;
 	
 	private PowerManager.WakeLock mWakeLock;
+	private Ringer mRinger;
 	
 	private static Handler hand = null;
 	private Handler handler = new Handler() {
@@ -72,16 +74,18 @@ public class InComingActivity extends Activity implements OnClickListener {
 		iv_hangup.setOnClickListener(this);
 		hand = handler;
 		
-		PowerManager powerManager = (PowerManager) getSystemService(Context.POWER_SERVICE);
-		mWakeLock = powerManager.newWakeLock(PowerManager.FULL_WAKE_LOCK|PowerManager.ON_AFTER_RELEASE, "incoming");
-		mWakeLock.acquire();
+		mRinger = Ringer.init(this);
+		if(!mRinger.isRinging()){
+			mRinger.ring();
+		}
 	}
 
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
-		if(mWakeLock.isHeld()){
-			mWakeLock.release();
+		hand = null;
+		if(mRinger.isRinging()){
+			mRinger.stopRing();
 		}
 	}
 

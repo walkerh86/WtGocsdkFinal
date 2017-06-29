@@ -1,6 +1,7 @@
 package com.goodocom.gocsdkfinal.activity;
 
 import com.goodocom.gocsdk.IGocsdkService;
+import com.goodocom.gocsdkfinal.GocsdkSettings;
 import com.goodocom.gocsdkfinal.R;
 import com.goodocom.gocsdkfinal.db.Database;
 import com.goodocom.gocsdkfinal.fragment.FragmentBlueToothInfo;
@@ -25,6 +26,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.app.AlertDialog.Builder;
+import android.support.v4.app.Fragment;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -34,6 +36,7 @@ import android.content.ServiceConnection;
 import android.database.sqlite.SQLiteDatabase;
 import android.telephony.PhoneNumberUtils;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 import android.widget.FrameLayout;
@@ -73,8 +76,8 @@ public class MainActivity extends BaseActivity {
 	public static final int MSG_UPDATE_MISSED_CALLLOG = 27;
 	public static final int MSG_UPDATE_CALLLOG_DONE = 28;
 
-	public static String mComingPhoneNum = null; // 来电号码
-	public static String mCalloutPhoneNum = null;// 拨出号码
+	public static String mComingPhoneNum = null; // 鏉ョ數鍙风爜
+	public static String mCalloutPhoneNum = null;// 鎷ㄥ嚭鍙风爜
 	public static String mLocalName = null;
 	public static String mPinCode = null;
 	public static boolean isInComing = false;
@@ -86,6 +89,8 @@ public class MainActivity extends BaseActivity {
 	private static IGocsdkService iGocsdkService;
 	private static MyFragmentTabHost tabhost;
 	private BootReceiver receiver;
+	
+	private GocsdkSettings mSettings;
 
 	private int mImageID[] = { R.drawable.btn_calllog_selector,
 			R.drawable.btn_contact_selector, R.drawable.btn_jianpan_selector,
@@ -102,8 +107,8 @@ public class MainActivity extends BaseActivity {
 			com.goodocom.gocsdkfinal.fragment.FragmentCallPhone.class,
 			FragmentBlueToothInfo.class, FragmentBlueToothList.class,
 			FragmentSetting.class };
-	private String[] mString = new String[] { "通话记录", "通讯录", "拨号盘", "蓝牙信息",
-			"蓝牙配对列表", "设置" };
+	private String[] mString = new String[] { "閫氳瘽璁板綍", "閫氳褰�", "鎷ㄥ彿鐩�", "钃濈墮淇℃伅",
+			"钃濈墮閰嶅鍒楄〃", "璁剧疆" };
 
 	private static Handler hand = null;
 
@@ -111,7 +116,7 @@ public class MainActivity extends BaseActivity {
 		return hand;
 	}
 
-	// 暴露方法，让其他页面能够获取主页面的参数
+	// 鏆撮湶鏂规硶锛岃鍏朵粬椤甸潰鑳藉鑾峰彇涓婚〉闈㈢殑鍙傛暟
 	public static IGocsdkService getService() {
 		return iGocsdkService;
 	}
@@ -132,23 +137,25 @@ public class MainActivity extends BaseActivity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
+		
+		mSettings = GocsdkSettings.getInstance(this);
 
-		System.out.println("主界面启动了");
-		// 注册开机广播接收者
+		System.out.println("涓荤晫闈㈠惎鍔ㄤ簡");
+		// 娉ㄥ唽寮�鏈哄箍鎾帴鏀惰��
 		myRegisterReceiver();
 
 		gocsdkService = new Intent(MainActivity.this, GocsdkService.class);
 
-		stopService(gocsdkService);
+		//stopService(gocsdkService);
 
 		conn = new MyConn();
 		bindService(gocsdkService, conn, BIND_AUTO_CREATE);
 
-		// 开启播放服务
+		// 寮�鍚挱鏀炬湇鍔�
 		Intent playerService = new Intent(this, PlayerService.class);
 		startService(playerService);
 
-		// 初始化布局
+		// 鍒濆鍖栧竷灞�
 		initView();
 		tabhost.setCurrentTab(2);
 		
@@ -159,22 +166,22 @@ public class MainActivity extends BaseActivity {
 		hand = handler;
 	}
 
-	// 销毁
+	// 閿�姣�
 	@Override
 	protected void onDestroy() {
 		System.out.println("MainActivity===onDestroy");
 		super.onDestroy();
 
-		// 注销蓝牙回调
+		// 娉ㄩ攢钃濈墮鍥炶皟
 		try {
 			iGocsdkService.unregisterCallback(callback);
 
 		} catch (RemoteException e) {
 			e.printStackTrace();
 		}
-		// 注销开机广播
+		// 娉ㄩ攢寮�鏈哄箍鎾�
 		unregisterReceiver(receiver);
-		// 解绑服务
+		// 瑙ｇ粦鏈嶅姟
 		unbindService(conn);
 		startService(gocsdkService);
 	}
@@ -192,35 +199,40 @@ public class MainActivity extends BaseActivity {
 		public void onServiceConnected(ComponentName name, IBinder service) {
 
 			iGocsdkService = IGocsdkService.Stub.asInterface(service);
-			// 蓝牙回调注册
-			// 查询当前HFP状态
+			// 钃濈墮鍥炶皟娉ㄥ唽
+			// 鏌ヨ褰撳墠HFP鐘舵��
 			try {
 				iGocsdkService.registerCallback(callback);
-
-				handler.postDelayed(new Runnable() {
-
-					@Override
-					public void run() {
-						try {
-							iGocsdkService.inqueryHfpStatus();
-							iGocsdkService.musicUnmute();
-							iGocsdkService.getLocalName();
-							iGocsdkService.getPinCode();
-						} catch (RemoteException e) {
-							e.printStackTrace();
-						}
-					}
-				}, 500);
+				if(mSettings.isOpen()){
+					doSerialInit();
+				}
 
 			} catch (RemoteException e) {
 				e.printStackTrace();
 			}
 		}
-
+		
 		@Override
 		public void onServiceDisconnected(ComponentName name) {
 
 		}
+	}
+	
+	private void doSerialInit(){
+		handler.postDelayed(new Runnable() {
+
+			@Override
+			public void run() {
+				try {
+					iGocsdkService.inqueryHfpStatus();
+					iGocsdkService.musicUnmute();
+					//iGocsdkService.getLocalName();
+					//iGocsdkService.getPinCode();
+				} catch (RemoteException e) {
+					e.printStackTrace();
+				}
+			}
+		}, 500);
 	}
 
 	private void initView() {
@@ -254,27 +266,27 @@ public class MainActivity extends BaseActivity {
 			 * 
 			 * switch (msg.what) {
 			 * 
-			 * case MSG_HF_CONNECTED:// 蓝牙设备已连接
+			 * case MSG_HF_CONNECTED:// 钃濈墮璁惧宸茶繛鎺�
 			 * Toast.makeText(MainActivity.this, R.string.bt_connect_info,
 			 * Toast.LENGTH_SHORT).show(); break; case MSG_HF_DISCONNECTED://
-			 * 无设备连接
+			 * 鏃犺澶囪繛鎺�
 			 * 
 			 * Toast.makeText(MainActivity.this, R.string.bt_disconnect_info,
-			 * Toast.LENGTH_SHORT).show(); // 清理配对列表 pairlists.clear(); if
-			 * (false == isConnected()) return; // 获取配对列表 try {
+			 * Toast.LENGTH_SHORT).show(); // 娓呯悊閰嶅鍒楄〃 pairlists.clear(); if
+			 * (false == isConnected()) return; // 鑾峰彇閰嶅鍒楄〃 try {
 			 * MainActivity.iGocsdkService.getPairList(); } catch
 			 * (RemoteException e1) { e1.printStackTrace(); }
 			 * 
 			 * mCurDevName = null; // disconnect clear device info mCurDevAddr =
-			 * null; break; case MSG_REMOTE_NAME:// 当前配对名称 String Name =
+			 * null; break; case MSG_REMOTE_NAME:// 褰撳墠閰嶅鍚嶇О String Name =
 			 * (String) msg.obj; mCurDevName = Name; setTitle(Name); try {
 			 * MainActivity.iGocsdkService.getPairList(); } catch
 			 * (RemoteException e1) { e1.printStackTrace(); } break;
 			 * 
-			 * case MSG_REMOTE_ADDRESS:// 当前配对地址 String Addr = (String) msg.obj;
+			 * case MSG_REMOTE_ADDRESS:// 褰撳墠閰嶅鍦板潃 String Addr = (String) msg.obj;
 			 * mCurDevAddr = Addr; break;
 			 */
-			case MSG_COMING:// 来电
+			case MSG_COMING:// 鏉ョ數
 				isInComing = true;
 				String phonenum = (String) msg.obj;
 				String phonename = "";
@@ -283,7 +295,7 @@ public class MainActivity extends BaseActivity {
 				Database.createTable(mDbDataBase,
 						Database.Sql_create_phonebook_tab);
 				phonename = Database.queryPhoneName(mDbDataBase,
-						Database.PhoneBookTable, phonenum);// 根据号码查询联系人
+						Database.PhoneBookTable, phonenum);// 鏍规嵁鍙风爜鏌ヨ鑱旂郴浜�
 				Intent intent = new Intent(MainActivity.this,
 						InComingActivity.class);
 				if (TextUtils.isEmpty(phonename)) {
@@ -294,43 +306,44 @@ public class MainActivity extends BaseActivity {
 				startActivity(intent);
 				break;
 			/*
-			 * case MSG_HANGUP:// 来电挂断 String str2 =
+			 * case MSG_HANGUP:// 鏉ョ數鎸傛柇 String str2 =
 			 * getString(R.string.phone_hangup_info);
 			 * Toast.makeText(MainActivity.this, str2, Toast.LENGTH_SHORT)
 			 * .show(); break;
 			 */
-			case MSG_TALKING:// 接听
-				if (isInComing) {// 来电接听
+			case MSG_TALKING:// 鎺ュ惉
+				if (isInComing) {// 鏉ョ數鎺ュ惉
 					Handler handler = InComingActivity.getHandler();
 					if (handler == null) {
 						return;
 					}
 					handler.sendEmptyMessage(InComingActivity.MSG_INCOMING_CONNECTION);
-				} else {// 拨出接听
+				} else {// 鎷ㄥ嚭鎺ュ惉
 					Handler handler = CallActivity.getHandler();
 					if (handler == null) {
 						return;
 					}
-					System.out.println("命令来了我就发送");
+					System.out.println("鍛戒护鏉ヤ簡鎴戝氨鍙戦��");
 					handler.sendEmptyMessage(CallActivity.Msg_CONNECT);
 				}
 				break;
-			case MSG_OUTGONG:// 拨出
+			case MSG_OUTGONG:// 鎷ㄥ嚭
 				isInComing = false;
 				String call_number = (String) msg.obj;
-				System.out.println("MainAcitivity中拨出的电话" + call_number);
+				System.out.println("MainAcitivity涓嫧鍑虹殑鐢佃瘽" + call_number);
 				callOut(call_number);
 				break;
-			case MSG_DEVICENAME:// 蓝牙设备名称
+			case MSG_DEVICENAME:// 钃濈墮璁惧鍚嶇О
 				String name = (String) msg.obj;
 				mLocalName = name;
+				Log.i("hcj.serial","MSG_DEVICENAME="+mLocalName);
 				break;
-			case MSG_DEVICEPINCODE:// 蓝牙设备的PIN码
+			case MSG_DEVICEPINCODE:// 钃濈墮璁惧鐨凱IN鐮�
 				String pincode = (String) msg.obj;
 				mPinCode = pincode;
 				break;
 			/**
-			 * case MSG_PAIRLIST:// 将设备添加到配对列表中 BtDevices btPairList =
+			 * case MSG_PAIRLIST:// 灏嗚澶囨坊鍔犲埌閰嶅鍒楄〃涓� BtDevices btPairList =
 			 * (BtDevices) msg.obj; Map<String, String> pairlist = new
 			 * HashMap<String, String>();
 			 * 
@@ -340,38 +353,38 @@ public class MainActivity extends BaseActivity {
 			 */
 			/*
 			 * 
-			 * case MSG_MUSIC_VOLUME_DOWN:// 音量调低
+			 * case MSG_MUSIC_VOLUME_DOWN:// 闊抽噺璋冧綆
 			 * mAudioManager.adjustStreamVolume(AudioManager.STREAM_MUSIC,
 			 * AudioManager.ADJUST_LOWER, AudioManager.FX_FOCUS_NAVIGATION_UP);
 			 * break;
 			 * 
-			 * case MSG_MUSIC_VOLUME_UP:// 音量调高
+			 * case MSG_MUSIC_VOLUME_UP:// 闊抽噺璋冮珮
 			 * mAudioManager.adjustStreamVolume(AudioManager.STREAM_MUSIC,
 			 * AudioManager.ADJUST_RAISE, AudioManager.FX_FOCUS_NAVIGATION_UP);
 			 * break;
 			 * 
-			 * case MSG_MUSIC_PLAY:// 播放音乐
-			 * Toast.makeText(getApplicationContext(), "蓝牙音乐当前状态：播放音乐", 0)
+			 * case MSG_MUSIC_PLAY:// 鎾斁闊充箰
+			 * Toast.makeText(getApplicationContext(), "钃濈墮闊充箰褰撳墠鐘舵�侊細鎾斁闊充箰", 0)
 			 * .show(); break;
 			 * 
-			 * case MSG_MUSIC_STOP:// 停止音乐
-			 * Toast.makeText(getApplicationContext(), "蓝牙音乐当前状态：停止音乐",
+			 * case MSG_MUSIC_STOP:// 鍋滄闊充箰
+			 * Toast.makeText(getApplicationContext(), "钃濈墮闊充箰褰撳墠鐘舵�侊細鍋滄闊充箰",
 			 * Toast.LENGTH_SHORT).show(); break;
 			 * 
 			 * 
-			 * case MSG_SET_MICPHONE_ON:// 打开麦克风
+			 * case MSG_SET_MICPHONE_ON:// 鎵撳紑楹﹀厠椋�
 			 * mAudioManager.setMicrophoneMute(true); CharSequence str3 =
 			 * getString(R.string.mic_on_info);
 			 * Toast.makeText(MainActivity.this, str3,
 			 * Toast.LENGTH_SHORT).show(); break;
 			 * 
-			 * case MSG_SET_MICPHONE_OFF:// 关闭麦克风
-			 * mAudioManager.setMicrophoneMute(false);// 设置是否让麦克风设置静音
+			 * case MSG_SET_MICPHONE_OFF:// 鍏抽棴楹﹀厠椋�
+			 * mAudioManager.setMicrophoneMute(false);// 璁剧疆鏄惁璁╅害鍏嬮璁剧疆闈欓煶
 			 * CharSequence str4 = getString(R.string.mic_off_info);
 			 * Toast.makeText(MainActivity.this, str4,
 			 * Toast.LENGTH_SHORT).show(); break;
 			 * 
-			 * case MSG_SET_SPEAERPHONE_ON:// 切换声道到手机端 if (service != null) try
+			 * case MSG_SET_SPEAERPHONE_ON:// 鍒囨崲澹伴亾鍒版墜鏈虹 if (service != null) try
 			 * { service.phoneTransfer(); } catch (RemoteException e1) { // TODO
 			 * Auto-generated catch block e1.printStackTrace(); } //
 			 * mAudioManager.setMicrophoneMute(true); // CharSequence
@@ -379,7 +392,7 @@ public class MainActivity extends BaseActivity {
 			 * Toast.makeText(MainActivity.this, str5, //
 			 * Toast.LENGTH_SHORT).show(); break;
 			 * 
-			 * case MSG_SET_SPEAERPHONE_OFF:// 切换声道到车机端 if (service != null) try
+			 * case MSG_SET_SPEAERPHONE_OFF:// 鍒囨崲澹伴亾鍒拌溅鏈虹 if (service != null) try
 			 * { service.phoneTransferBack(); } catch (RemoteException e1) { //
 			 * catch block e1.printStackTrace(); } //
 			 * mAudioManager.setMicrophoneMute(false); // CharSequence str6 =
@@ -388,19 +401,19 @@ public class MainActivity extends BaseActivity {
 			 * Toast.LENGTH_SHORT).show(); break;
 			 * 
 			 * 
-			 * case MSG_UPDATE_PHONEBOOK:// 弹出更新联系人列表的等待对话框
-			 * Toast.makeText(getApplicationContext(), "更新ing", 0).show(); //
+			 * case MSG_UPDATE_PHONEBOOK:// 寮瑰嚭鏇存柊鑱旂郴浜哄垪琛ㄧ殑绛夊緟瀵硅瘽妗�
+			 * Toast.makeText(getApplicationContext(), "鏇存柊ing", 0).show(); //
 			 * phoneBookdialog = ProgressDialog.show(MainActivity.this, //
-			 * "更新联系人", "请稍等...", true); showDownLoadContactDialog(); break;
+			 * "鏇存柊鑱旂郴浜�", "璇风◢绛�...", true); showDownLoadContactDialog(); break;
 			 * case MSG_UPDATE_PHONEBOOK_DONE:
-			 * Toast.makeText(getApplicationContext(), "更新ed", 0).show(); if
+			 * Toast.makeText(getApplicationContext(), "鏇存柊ed", 0).show(); if
 			 * (alertDialog != null) { alertDialog.dismiss(); } break; case
-			 * MSG_DIAL_DIALOG:// 提示是否拨打电话的对话框
+			 * MSG_DIAL_DIALOG:// 鎻愮ず鏄惁鎷ㄦ墦鐢佃瘽鐨勫璇濇
 			 * 
 			 * final phoneBook phone = (phoneBook) msg.obj; AlertDialog.Builder
 			 * builder = new Builder(MainActivity.this);
-			 * builder.setMessage("确定要拨打吗?" + phone.name + ":" + phone.num);
-			 * builder.setTitle("提示"); builder.setPositiveButton("确认", new
+			 * builder.setMessage("纭畾瑕佹嫧鎵撳悧?" + phone.name + ":" + phone.num);
+			 * builder.setTitle("鎻愮ず"); builder.setPositiveButton("纭", new
 			 * android.content.DialogInterface.OnClickListener() {
 			 * 
 			 * @Override public void onClick(DialogInterface arg0, int arg1) {
@@ -417,14 +430,14 @@ public class MainActivity extends BaseActivity {
 			 * .setVisibility(View.VISIBLE); FragmentCallPhone.rl_call_pager
 			 * .setVisibility(View.GONE);
 			 * 
-			 * } }); builder.setNegativeButton("取消", new
+			 * } }); builder.setNegativeButton("鍙栨秷", new
 			 * android.content.DialogInterface.OnClickListener() {
 			 * 
 			 * @Override public void onClick(DialogInterface dialog, int which)
 			 * { dialog.dismiss(); } }); builder.create().show(); break;
 			 * 
 			 * 
-			 * case MSG_UPDATE_DEVICE_LIST:// 更新蓝牙设备列表 PhoneBookdialog =
+			 * case MSG_UPDATE_DEVICE_LIST:// 鏇存柊钃濈墮璁惧鍒楄〃 PhoneBookdialog =
 			 * ProgressDialog.show(MainActivity.this, "Wait", "Please wait...",
 			 * true); // sleep 4s to wait new Thread() {
 			 * 
@@ -436,20 +449,20 @@ public class MainActivity extends BaseActivity {
 			 * case MSG_UPDATE_INCOMING_CALLLOG:
 			 * 
 			 * if (GocsdkCallbackImp.hfpStatus > 0) { phoneBookdialog =
-			 * ProgressDialog.show(MainActivity.this, "下载来电通话记录", "请稍等...",
-			 * true); } else { Toast.makeText(MainActivity.this, "请您先连接设备",
+			 * ProgressDialog.show(MainActivity.this, "涓嬭浇鏉ョ數閫氳瘽璁板綍", "璇风◢绛�...",
+			 * true); } else { Toast.makeText(MainActivity.this, "璇锋偍鍏堣繛鎺ヨ澶�",
 			 * Toast.LENGTH_SHORT).show(); }
 			 * 
 			 * break; case MSG_UPDATE_CALLOUT_CALLLOG: if
 			 * (GocsdkCallbackImp.hfpStatus > 0) { phoneBookdialog =
-			 * ProgressDialog.show(MainActivity.this, "下载拨出通话记录", "请稍等...",
-			 * true); } else { Toast.makeText(MainActivity.this, "请您先连接设备",
+			 * ProgressDialog.show(MainActivity.this, "涓嬭浇鎷ㄥ嚭閫氳瘽璁板綍", "璇风◢绛�...",
+			 * true); } else { Toast.makeText(MainActivity.this, "璇锋偍鍏堣繛鎺ヨ澶�",
 			 * Toast.LENGTH_SHORT).show(); }
 			 * 
 			 * break; case MSG_UPDATE_MISSED_CALLLOG: if
 			 * (GocsdkCallbackImp.hfpStatus > 0) { phoneBookdialog =
-			 * ProgressDialog.show(MainActivity.this, "下载未接通话记录", "请稍等...",
-			 * true); } else { Toast.makeText(MainActivity.this, "请您先连接设备",
+			 * ProgressDialog.show(MainActivity.this, "涓嬭浇鏈帴閫氳瘽璁板綍", "璇风◢绛�...",
+			 * true); } else { Toast.makeText(MainActivity.this, "璇锋偍鍏堣繛鎺ヨ澶�",
 			 * Toast.LENGTH_SHORT).show(); } break; case
 			 * MSG_UPDATE_CALLLOG_DONE: if (phoneBookdialog != null) {
 			 * phoneBookdialog.dismiss(); } break;
@@ -467,7 +480,7 @@ public class MainActivity extends BaseActivity {
 		startActivity(intent);
 	}
 
-	// 拨打正确的电话
+	// 鎷ㄦ墦姝ｇ‘鐨勭數璇�
 	private static void placeCall(String mLastNumber) {
 		if (mLastNumber.length() == 0)
 			return;

@@ -9,6 +9,8 @@ import com.goodocom.gocsdk.IGocsdkCallback;
 import com.goodocom.gocsdk.SerialPort;
 import com.goodocom.gocsdkfinal.Commands;
 import com.goodocom.gocsdkfinal.Config;
+import com.goodocom.gocsdkfinal.GocsdkSettings;
+import com.goodocom.gocsdkfinal.Ringer;
 import com.goodocom.gocsdkfinal.activity.CallActivity;
 import com.goodocom.gocsdkfinal.activity.InComingActivity;
 import com.goodocom.gocsdkfinal.db.Database;
@@ -23,6 +25,7 @@ import android.os.IBinder;
 import android.os.Looper;
 import android.os.PowerManager;
 import android.os.RemoteCallbackList;
+import android.telephony.PhoneNumberUtils;
 import android.util.Log;
 
 import android.text.TextUtils;
@@ -44,7 +47,7 @@ public class GocsdkService extends Service {
 	
 	public static boolean isBehind = false;
 
-	private PowerManager.WakeLock mWakeLock;
+	private GocsdkSettings mSettings;	
 
 	@Override
 	public void onCreate() {
@@ -53,9 +56,8 @@ public class GocsdkService extends Service {
 		parser = new CommandParser(callbacks,this);
 		handler.sendEmptyMessage(MSG_START_SERIAL);
 		super.onCreate();
-
-            PowerManager powerManager = (PowerManager) getSystemService(Context.POWER_SERVICE);
-            mWakeLock = powerManager.newWakeLock(PowerManager.FULL_WAKE_LOCK |PowerManager.ON_AFTER_RELEASE, "incoming");
+		
+		mSettings = GocsdkSettings.getInstance(this);		
 	}
 	
 	@Override
@@ -83,28 +85,39 @@ public class GocsdkService extends Service {
 			if (msg.what == MSG_START_SERIAL) {
 				serialThread = new SerialThread();
 				serialThread.start();
+				
+				initSerial();
 			} else if (msg.what == MSG_SERIAL_RECEIVED) {
 				byte[] data = (byte[]) msg.obj;
 				parser.onBytes(data);
-			}else if(msg.what == MSG_CALL_INCOMING){
+			}
+			
+			else if(msg.what == MSG_IND_INCOMING){
 				startInCallActivity((String) msg.obj);
-			}else if(msg.what == MSG_CALL_HUANGUP){
-				
+			}else if(msg.what == MSG_IND_HANG_UP){
+				callhangUp();
+			}else if(msg.what == MSG_IND_OUTGOING_TALKING_NUMBER){
+				startOutCallActivity((String) msg.obj, false);
+			}else if(msg.what == MSG_IND_TALKING){
+				callConnected();
+			}else if(msg.what == MSG_IND_CURRENT_DEVICE_NAME){
+				mLocalName = (String) msg.obj;
+			}else if(msg.what == MSG_IND_CURRENT_PIN_CODE){
+				mPinCode = (String) msg.obj;
+			}else if(msg.what == MSG_IND_INIT_SUCCEED){
+				initSerialSettings();
 			}
 		};
 	};
 
 	@Override
 	public IBinder onBind(Intent intent) {
-		System.out.println("服务绑定了");
 		isBehind = false;
 		return new GocsdkServiceImp(this);
 	}
 	@Override
 	public boolean onUnbind(Intent intent) {
-		isBehind = true;
-		System.out.println("服务解绑了");
-		
+		isBehind = true;		
 		return super.onUnbind(intent);
 	}
 	class SerialThread extends Thread {
@@ -199,12 +212,39 @@ public class GocsdkService extends Service {
 		//Log.d("goc", "GocsdkService unregisterCallback");
 		callbacks.unregister(callback);
 	}
+	
+	private void initSerial(){
+		if(mSettings.isOpen()){
+			write(Commands.BT_OPEN);
+		}
+	}
+	
+	private void initSerialSettings(){
+		Log.i("hcj.serial","initSerialSettings isOpen="+mSettings.isOpen());
+		//if(mSettings.isOpen()){
+			write(mSettings.isAutoConnect() ? Commands.SET_AUTO_CONNECT_ON_POWER : Commands.UNSET_AUTO_CONNECT_ON_POWER);
+			write(mSettings.isAutoAnswer() ? Commands.SET_AUTO_ANSWER : Commands.UNSET_AUTO_ANSWER);
+			write(Commands.MODIFY_LOCAL_NAME);
+			write(Commands.MODIFY_PIN_CODE);
+		//}
+	}
 
+	public static final int MSG_IND_INCOMING = 10;
+	public static final int MSG_IND_HANG_UP = 11;
+	public static final int MSG_IND_OUTGOING_TALKING_NUMBER = 12;
+	public static final int MSG_IND_TALKING = 13;
+	public static final int MSG_IND_CURRENT_DEVICE_NAME = 14;
+	public static final int MSG_IND_CURRENT_PIN_CODE = 15;
+	public static final int MSG_IND_INIT_SUCCEED = 16;
+	
+	public static String mLocalName = null;
+	public static String mPinCode = null;
 
-	public static final int MSG_CALL_INCOMING = 10;
-	public static final int MSG_CALL_HUANGUP = 11;
+	private String mIncomingNumber;
 
 	private void startInCallActivity(String phonenum){
+		mIncomingNumber = phonenum;
+		
 		String phonename = "";
 		SQLiteDatabase mDbDataBase = Database.getSystemDb();
 		Database.createTable(mDbDataBase,
@@ -219,8 +259,30 @@ public class GocsdkService extends Service {
 		}
 		intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_SINGLE_TOP);
 		startActivity(intent);
-		
-		//mWakeLock.acquire();
+	}
+
+	private void startOutCallActivity(String phoneNumber2, boolean isConnect) {
+		if(!isConnect){
+			placeCall(phoneNumber2);
+		}
+		Intent intent = new Intent(this, CallActivity.class);
+		intent.putExtra("callNumber", phoneNumber2);
+		intent.putExtra("isConnect", isConnect);
+		intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_SINGLE_TOP);
+		startActivity(intent);
+	}
+
+	private void placeCall(String mLastNumber) {
+		if (mLastNumber.length() == 0)
+			return;
+		if (PhoneNumberUtils.isGlobalPhoneNumber(mLastNumber)) {
+			// place the call if it is a valid number
+			if (mLastNumber == null || !TextUtils.isGraphic(mLastNumber)) {
+				// There is no number entered.
+				return;
+			}
+			write(Commands.DIAL+mLastNumber);
+		}
 	}
 
 	private void callhangUp(){
@@ -232,10 +294,20 @@ public class GocsdkService extends Service {
 		if(handler != null){
 			handler.sendEmptyMessage(CallActivity.MSG_INCOMING_HANGUP);
 		}
-		/*
-		if(mWakeLock.isHeld()){
-			mWakeLock.release();
-		}*/
+	}
+
+	private void callConnected(){
+		Handler handler = InComingActivity.getHandler();
+		if(handler != null){
+			handler.sendEmptyMessage(InComingActivity.MSG_INCOMINNG_HANGUP);
+			write(Commands.ACCEPT_INCOMMING);
+			startOutCallActivity(mIncomingNumber, true);
+			return;
+		}
+		handler = CallActivity.getHandler();
+		if (handler != null) {
+			handler.sendEmptyMessage(CallActivity.Msg_CONNECT);
+		}
 	}
 	
 }

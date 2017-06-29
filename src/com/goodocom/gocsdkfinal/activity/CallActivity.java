@@ -107,6 +107,12 @@ public class CallActivity extends Activity implements OnClickListener {
 		hand = handler;
 	}
 
+	@Override
+	public void onDestroy() {
+		super.onDestroy();
+		hand = null;
+	}
+
 	private void isConnect() {
 		if(isConnect){
 			rl_call_pager.setVisibility(View.GONE);

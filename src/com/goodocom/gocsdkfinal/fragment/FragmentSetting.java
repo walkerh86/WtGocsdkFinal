@@ -1,8 +1,11 @@
 package com.goodocom.gocsdkfinal.fragment;
 
+import com.goodocom.gocsdkfinal.GocsdkSettings;
 import com.goodocom.gocsdkfinal.R;
 import com.goodocom.gocsdkfinal.activity.MainActivity;
+import com.goodocom.gocsdkfinal.service.GocsdkService;
 
+import android.app.Activity;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -10,6 +13,7 @@ import android.os.RemoteException;
 import android.support.v4.app.Fragment;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -52,6 +56,8 @@ public class FragmentSetting extends Fragment implements OnClickListener {
 	private EditText et_pin_code;
 	private ImageView auto_connect_switch;
 	private ImageView auto_answer_switch;
+	
+	private GocsdkSettings mSettings;
 
 	
 	@Override
@@ -70,8 +76,6 @@ public class FragmentSetting extends Fragment implements OnClickListener {
 		return view;
 	}
 
-
-
 	private View initView(View view) {
 		et_device_name = (EditText) view.findViewById(R.id.et_device_name);
 		et_pin_code = (EditText) view.findViewById(R.id.et_pin_code);
@@ -85,12 +89,22 @@ public class FragmentSetting extends Fragment implements OnClickListener {
 		mBtSwitch = (ImageView)view.findViewById(R.id.bt_switch);
 		mBtSwitch.setOnClickListener(this);
 		
-		if(MainActivity.mLocalName!=null){
-			et_device_name.setText(MainActivity.mLocalName);
+		if(GocsdkService.mLocalName!=null){
+			et_device_name.setText(GocsdkService.mLocalName);
 		}
-		if(MainActivity.mPinCode!=null){
-			et_pin_code.setText(MainActivity.mPinCode);
+		if(GocsdkService.mPinCode!=null){
+			et_pin_code.setText(GocsdkService.mPinCode);
 		}
+		mSettings = GocsdkSettings.getInstance(getActivity());
+		isBtSwitch = mSettings.isOpen();
+		isConnectSwitch = mSettings.isAutoConnect();
+		isAnswerSwitch = mSettings.isAutoAnswer();
+		mBtSwitch.setImageResource(isBtSwitch ? R.drawable.ico_4157_kai : R.drawable.ico_4158_guan);
+		auto_connect_switch.setImageResource(isConnectSwitch ? R.drawable.ico_4157_kai : R.drawable.ico_4158_guan);
+		auto_answer_switch.setImageResource(isAnswerSwitch ? R.drawable.ico_4157_kai : R.drawable.ico_4158_guan);
+		auto_connect_switch.setEnabled(isBtSwitch);
+		auto_answer_switch.setEnabled(isBtSwitch);
+		
 		et_device_name.addTextChangedListener(new TextWatcher() {
 			
 			@Override
@@ -180,6 +194,7 @@ public class FragmentSetting extends Fragment implements OnClickListener {
 	private ImageView mBtSwitch;
 	private void setBtSwitch(){
 		isBtSwitch = !isBtSwitch;
+		mSettings.setOpen(isBtSwitch);
 		if (isBtSwitch) {
 			mBtSwitch.setImageResource(R.drawable.ico_4157_kai);
 			try {
@@ -199,6 +214,7 @@ public class FragmentSetting extends Fragment implements OnClickListener {
 
 	private void isAnswerSwitch() {
 		isAnswerSwitch = !isAnswerSwitch;
+		mSettings.setAutoAnswer(isAnswerSwitch);
 		if (isAnswerSwitch) {
 			auto_answer_switch.setImageResource(R.drawable.ico_4157_kai);
 			try {
@@ -218,6 +234,7 @@ public class FragmentSetting extends Fragment implements OnClickListener {
 
 	private void isConnectSwitch() {
 		isConnectSwitch = !isConnectSwitch;
+		mSettings.setAutoConnect(isConnectSwitch);
 		if (isConnectSwitch) {
 			auto_connect_switch.setImageResource(R.drawable.ico_4157_kai);
 			try {
@@ -235,4 +252,12 @@ public class FragmentSetting extends Fragment implements OnClickListener {
 		}
 	}
 
+	public void updateDeviceInfo(){
+		if(MainActivity.mLocalName!=null){
+			et_device_name.setText(MainActivity.mLocalName);
+		}
+		if(MainActivity.mPinCode!=null){
+			et_pin_code.setText(MainActivity.mPinCode);
+		}
+	}
 }

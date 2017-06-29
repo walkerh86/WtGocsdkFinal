@@ -5,7 +5,7 @@
     android:versionName="2.0" >
 
     <uses-sdk
-        android:minSdkVersion="17"
+        android:minSdkVersion="21"
         android:targetSdkVersion="23" />
     
      <!-- 允许一个程序获取信息有关当前或最近运行的任务，一个缩略的任务状态，是否活动等等 -->
@@ -29,6 +29,7 @@
     <uses-permission android:name="android.permission.PROCESS_OUTGOING_CALLS" />
     
     <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.VIBRATE" />    
 
     <application
         android:allowBackup="true"
