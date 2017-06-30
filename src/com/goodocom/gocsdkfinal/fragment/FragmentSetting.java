@@ -1,5 +1,6 @@
 package com.goodocom.gocsdkfinal.fragment;
 
+import com.goodocom.gocsdk.IGocsdkService;
 import com.goodocom.gocsdkfinal.GocsdkSettings;
 import com.goodocom.gocsdkfinal.R;
 import com.goodocom.gocsdkfinal.activity.MainActivity;
@@ -63,13 +64,13 @@ public class FragmentSetting extends Fragment implements OnClickListener {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		activity = (MainActivity) getActivity();
+		//activity = (MainActivity) getActivity();
 	}
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
-		View view = View.inflate(activity, R.layout.fragmentsettings, null);
+		View view = View.inflate(getActivity(), R.layout.fragmentsettings, null);
 		initView(view);
 		//initData();
 		//hand = handler;
@@ -124,7 +125,10 @@ public class FragmentSetting extends Fragment implements OnClickListener {
 			public void afterTextChanged(Editable s) {
 				String deviceName = et_device_name.getText().toString().trim();
 				try {
-					MainActivity.getService().setLocalName(deviceName); 
+					//MainActivity.getService().setLocalName(deviceName); 
+					if(mService != null){
+						mService.setLocalName(deviceName);
+					}
 				 } catch(RemoteException e) { 
 					 e.printStackTrace();
 				}
@@ -158,7 +162,10 @@ public class FragmentSetting extends Fragment implements OnClickListener {
 			public void afterTextChanged(Editable s) {
 				String pinCode = et_pin_code.getText().toString().trim();
 				try {
-					MainActivity.getService().setPinCode(pinCode);
+					//MainActivity.getService().setPinCode(pinCode);
+					if(mService != null){
+						mService.setPinCode(pinCode);
+					}
 				} catch (RemoteException e) {
 					e.printStackTrace();
 				}
@@ -198,18 +205,24 @@ public class FragmentSetting extends Fragment implements OnClickListener {
 		if (isBtSwitch) {
 			mBtSwitch.setImageResource(R.drawable.ico_4157_kai);
 			try {
-				MainActivity.getService().openBt();
+				if(mService != null){
+					mService.openBt();
+				}
 			} catch (RemoteException e) {
 				e.printStackTrace();
 			}
 		} else {
 			mBtSwitch.setImageResource(R.drawable.ico_4158_guan);
 			try {
-				MainActivity.getService().closeBt();
+				if(mService != null){
+					mService.closeBt();
+				}
 			} catch (RemoteException e) {
 				e.printStackTrace();
 			}
 		}
+		auto_connect_switch.setEnabled(isBtSwitch);
+		auto_answer_switch.setEnabled(isBtSwitch);
 	}
 
 	private void isAnswerSwitch() {
@@ -218,14 +231,18 @@ public class FragmentSetting extends Fragment implements OnClickListener {
 		if (isAnswerSwitch) {
 			auto_answer_switch.setImageResource(R.drawable.ico_4157_kai);
 			try {
-				MainActivity.getService().setAutoAnswer();
+				if(mService != null){
+					mService.setAutoAnswer();
+				}
 			} catch (RemoteException e) {
 				e.printStackTrace();
 			}
 		} else {
 			auto_answer_switch.setImageResource(R.drawable.ico_4158_guan);
 			try {
-				MainActivity.getService().cancelAutoAnswer();
+				if(mService != null){
+					mService.cancelAutoAnswer();
+				}
 			} catch (RemoteException e) {
 				e.printStackTrace();
 			}
@@ -238,14 +255,18 @@ public class FragmentSetting extends Fragment implements OnClickListener {
 		if (isConnectSwitch) {
 			auto_connect_switch.setImageResource(R.drawable.ico_4157_kai);
 			try {
-				MainActivity.getService().setAutoConnect();
+				if(mService != null){
+					mService.setAutoConnect();
+				}
 			} catch (RemoteException e) {
 				e.printStackTrace();
 			}
 		} else {
 			auto_connect_switch.setImageResource(R.drawable.ico_4158_guan);
 			try {
-				MainActivity.getService().cancelAutoConnect();
+				if(mService != null){
+					mService.cancelAutoConnect();
+				}
 			} catch (RemoteException e) {
 				e.printStackTrace();
 			}
@@ -259,5 +280,10 @@ public class FragmentSetting extends Fragment implements OnClickListener {
 		if(MainActivity.mPinCode!=null){
 			et_pin_code.setText(MainActivity.mPinCode);
 		}
+	}
+	
+	private IGocsdkService mService;
+	public void setGocsdkService(IGocsdkService service){
+		mService = service;
 	}
 }

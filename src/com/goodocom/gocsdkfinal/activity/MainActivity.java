@@ -201,13 +201,16 @@ public class MainActivity extends BaseActivity {
 		public void onServiceConnected(ComponentName name, IBinder service) {
 
 			iGocsdkService = IGocsdkService.Stub.asInterface(service);
+			if(iGocsdkService != null && mFragmentSetting != null){
+				mFragmentSetting.setGocsdkService(iGocsdkService);
+			}
 			// 钃濈墮鍥炶皟娉ㄥ唽
 			// 鏌ヨ褰撳墠HFP鐘舵��
 			try {
 				iGocsdkService.registerCallback(callback);
-				if(mSettings.isOpen()){
-					doSerialInit();
-				}
+				//if(mSettings.isOpen()){
+					//doSerialInit();
+				//}
 
 			} catch (RemoteException e) {
 				e.printStackTrace();
@@ -228,8 +231,8 @@ public class MainActivity extends BaseActivity {
 				try {
 					iGocsdkService.inqueryHfpStatus();
 					iGocsdkService.musicUnmute();
-					//iGocsdkService.getLocalName();
-					//iGocsdkService.getPinCode();
+					iGocsdkService.getLocalName();
+					iGocsdkService.getPinCode();
 				} catch (RemoteException e) {
 					e.printStackTrace();
 				}
@@ -499,6 +502,17 @@ public class MainActivity extends BaseActivity {
 				MainActivity.getService().phoneDail(mLastNumber);
 			} catch (RemoteException e) {
 				e.printStackTrace();
+			}
+		}
+	}
+	
+	FragmentSetting mFragmentSetting;
+	@Override
+	public void onAttachFragment(Fragment fragment) {
+		if (fragment instanceof FragmentSetting) {
+			mFragmentSetting = (FragmentSetting)fragment;
+			if(iGocsdkService != null){
+				mFragmentSetting.setGocsdkService(iGocsdkService);
 			}
 		}
 	}

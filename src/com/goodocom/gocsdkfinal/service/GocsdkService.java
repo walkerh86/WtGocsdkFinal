@@ -47,7 +47,12 @@ public class GocsdkService extends Service {
 	
 	public static boolean isBehind = false;
 
-	private GocsdkSettings mSettings;	
+	private GocsdkSettings mSettings;
+	private static GocsdkService mGocsdkService;
+	
+	public static GocsdkService getInstance(){
+		return mGocsdkService;
+	}
 
 	@Override
 	public void onCreate() {
@@ -57,12 +62,13 @@ public class GocsdkService extends Service {
 		handler.sendEmptyMessage(MSG_START_SERIAL);
 		super.onCreate();
 		
-		mSettings = GocsdkSettings.getInstance(this);		
+		mSettings = GocsdkSettings.getInstance(this);
+		mGocsdkService = this;
 	}
 	
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
-		System.out.println("服务启动了");
+		//System.out.println("服务启动了");
 		isBehind = true;
 		return super.onStartCommand(intent, flags, startId);
 	}
@@ -72,6 +78,8 @@ public class GocsdkService extends Service {
 		running = false;
 		callbacks.kill();
 		super.onDestroy();
+		
+		mGocsdkService = null;
 	}
 
 
@@ -86,7 +94,12 @@ public class GocsdkService extends Service {
 				serialThread = new SerialThread();
 				serialThread.start();
 				
-				initSerial();
+				this.postDelayed(new Runnable(){
+					@Override
+					public void run() {
+						queryBtState();
+					}					
+				},100);
 			} else if (msg.what == MSG_SERIAL_RECEIVED) {
 				byte[] data = (byte[]) msg.obj;
 				parser.onBytes(data);
@@ -105,7 +118,15 @@ public class GocsdkService extends Service {
 			}else if(msg.what == MSG_IND_CURRENT_PIN_CODE){
 				mPinCode = (String) msg.obj;
 			}else if(msg.what == MSG_IND_INIT_SUCCEED){
-				initSerialSettings();
+				setBtState(BT_STATE_ON);
+			}else if(msg.what == MSG_IND_STOP_DISCOVERY){
+				setBtState(BT_STATE_OFF);
+			}else if(msg.what == MSG_IND_HFP_CONNECTED){
+				mConnected = true;
+				notifyConnectState(mConnected);
+			}else if(msg.what == MSG_IND_HFP_DISCONNECTED){
+				mConnected = false;
+				notifyConnectState(mConnected);
 			}
 		};
 	};
@@ -213,18 +234,47 @@ public class GocsdkService extends Service {
 		callbacks.unregister(callback);
 	}
 	
-	private void initSerial(){
-		if(mSettings.isOpen()){
-			//should try more times
-			write(Commands.BT_OPEN);
-		}
+	private void queryBtState(){
+		Log.i("hcj.serial", "queryBtState");
+		//if(mBtState == BT_STATE_UNKOWN){
+			write("QS");
+		//}
 	}
 	
+	private void setBtState(int state){
+		Log.i("hcj.serial", String.format("setBtState prev=%d,now=%d",mBtState,state));
+		if(mBtState != state){
+			mBtSwitching = false;
+			
+			if(mBtState == BT_STATE_UNKOWN){
+				boolean isBtSettingsOn = mSettings.isOpen();
+				if(isBtSettingsOn && (state == BT_STATE_OFF)){
+					mBtState = state;
+					Log.i("hcj.serial", "init open bt");
+					write(Commands.BT_OPEN);
+					return;
+				}else if(!isBtSettingsOn && (state == BT_STATE_ON)){
+					mBtState = state;
+					Log.i("hcj.serial", "init close bt");
+					write(Commands.BT_CLOSE);
+					return;
+				}
+			}
+			mBtState = state;
+			notifyOpenState();
+			if(isOpened()){
+				initSerialSettings();
+			}
+		}
+	}
+		
 	private void initSerialSettings(){
 		Log.i("hcj.serial","initSerialSettings isOpen="+mSettings.isOpen());
 		//if(mSettings.isOpen()){
 			write(mSettings.isAutoConnect() ? Commands.SET_AUTO_CONNECT_ON_POWER : Commands.UNSET_AUTO_CONNECT_ON_POWER);
 			write(mSettings.isAutoAnswer() ? Commands.SET_AUTO_ANSWER : Commands.UNSET_AUTO_ANSWER);
+			write(Commands.INQUIRY_HFP_STATUS);
+			write(Commands.MUSIC_UNMUTE);
 			write(Commands.MODIFY_LOCAL_NAME);
 			write(Commands.MODIFY_PIN_CODE);
 		//}
@@ -237,8 +287,9 @@ public class GocsdkService extends Service {
 	public static final int MSG_IND_CURRENT_DEVICE_NAME = 14;
 	public static final int MSG_IND_CURRENT_PIN_CODE = 15;
 	public static final int MSG_IND_INIT_SUCCEED = 16;
-	public static final int MSG_IND_HFP_CONNECTED = 17;
-	public static final int MSG_IND_HFP_DISCONNECTED = 17;
+	public static final int MSG_IND_STOP_DISCOVERY = 17;
+	public static final int MSG_IND_HFP_CONNECTED = 18;
+	public static final int MSG_IND_HFP_DISCONNECTED = 19;
 	
 	public static String mLocalName = null;
 	public static String mPinCode = null;
@@ -311,6 +362,43 @@ public class GocsdkService extends Service {
 		if (handler != null) {
 			handler.sendEmptyMessage(CallActivity.Msg_CONNECT);
 		}
+	}
+	
+	private boolean mBtSwitching = false;
+	public void setBtSwitch(boolean open){
+		Log.i("hcj.serial", "setBtSwitch mBtSwitching="+mBtSwitching);
+		if(mBtSwitching){
+			return;
+		}
+		mBtSwitching = true;
+		write(open ? Commands.BT_OPEN : Commands.BT_CLOSE);
+	}
+
+	private static final int BT_STATE_UNKOWN = -1;
+	private static final int BT_STATE_OFF = 0;
+	private static final int BT_STATE_ON = 1;
+	private int mBtState = BT_STATE_UNKOWN;
+	public boolean isOpened(){
+		return mBtState == BT_STATE_ON;
+	}
+
+	private void notifyOpenState(){
+		Log.i("hcj.serial", "notifyOpenState state="+mBtState);
+		
+		Intent intent = new Intent("com.goodocom.gocsdk.open_state");
+		intent.putExtra("opened", isOpened());
+		this.sendBroadcast(intent);
+	}
+	
+	private boolean mConnected = false;
+	public boolean isConnected(){
+		return mConnected;
+	}
+	
+	private void notifyConnectState(boolean connected){
+		Intent intent = new Intent("com.goodocom.gocsdk.connect_state");
+		intent.putExtra("connected", connected);
+		this.sendBroadcast(intent);
 	}
 	
 }

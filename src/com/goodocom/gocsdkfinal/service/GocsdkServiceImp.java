@@ -18,12 +18,19 @@ public class GocsdkServiceImp extends IGocsdkService.Stub {
 
 	@Override
 	public void openBt() throws RemoteException{
-		write(Commands.BT_OPEN);
+		//write(Commands.BT_OPEN);
+		service.setBtSwitch(true);
 	}
 
 	@Override
 	public void closeBt() throws RemoteException{
-		write(Commands.BT_CLOSE);
+		//write(Commands.BT_CLOSE);
+		service.setBtSwitch(false);
+	}
+	
+	@Override
+	public void queryBtSwitch() throws RemoteException {
+		write("QS");
 	}
 
 	@Override
@@ -219,7 +226,7 @@ public class GocsdkServiceImp extends IGocsdkService.Stub {
 
 	@Override
 	public void callLogstartUpdate(int type) throws RemoteException {
-		System.out.println("去下载通话记录啦");
+		System.out.println("鍘讳笅杞介�氳瘽璁板綍鍟�");
 		switch (type) {
 		case 1:
 			write(Commands.SET_OUT_GOING_CALLLOG);

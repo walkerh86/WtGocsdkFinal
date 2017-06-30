@@ -400,7 +400,7 @@ public class CommandParser extends GocsdkCommon {
 
 	private Handler mServiceHandler;
 	private boolean handleGlobalCmd(String cmd){
-		Log.i("hcj.serial","handleGlobalCmd:"+cmd);
+		//Log.i("hcj.serial","handleGlobalCmd:"+cmd);
 		if (cmd.startsWith(Commands.IND_INCOMING)) {
 			String number = "";
 			if (cmd.length() > 2) {
@@ -436,15 +436,18 @@ public class CommandParser extends GocsdkCommon {
 		}else if (cmd.startsWith(Commands.IND_INIT_SUCCEED)) {
 			mServiceHandler.sendMessage(mServiceHandler.obtainMessage(GocsdkService.MSG_IND_INIT_SUCCEED));
 			return true;
+		}else if(cmd.startsWith(Commands.STOP_DISCOVERY)){
+			mServiceHandler.sendMessage(mServiceHandler.obtainMessage(GocsdkService.MSG_IND_STOP_DISCOVERY));
+			return true;
 		}else if (cmd.startsWith(Commands.IND_TALKING)) {
 			mServiceHandler.sendMessage(mServiceHandler.obtainMessage(GocsdkService.MSG_IND_TALKING));
 			return true;
 		}else if (cmd.startsWith(Commands.IND_HFP_CONNECTED)) {
 			GocsdkCallbackImp.hfpStatus = 1;
-			//mServiceHandler.sendMessage(mServiceHandler.obtainMessage(GocsdkService.MSG_IND_HFP_CONNECTED));
+			mServiceHandler.sendMessage(mServiceHandler.obtainMessage(GocsdkService.MSG_IND_HFP_CONNECTED));
 		}else if (cmd.startsWith(Commands.IND_HFP_DISCONNECTED)) {
 			GocsdkCallbackImp.hfpStatus = 0;
-			//mServiceHandler.sendMessage(mServiceHandler.obtainMessage(GocsdkService.MSG_IND_HFP_DISCONNECTED));
+			mServiceHandler.sendMessage(mServiceHandler.obtainMessage(GocsdkService.MSG_IND_HFP_DISCONNECTED));
 		}
 		/*else if (cmd.startsWith(Commands.IND_OUTGOING_TALKING_NUMBER)) {
 
