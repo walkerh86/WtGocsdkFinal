@@ -147,7 +147,7 @@ public class MainActivity extends BaseActivity {
 		myRegisterReceiver();
 
 		gocsdkService = new Intent(MainActivity.this, GocsdkService.class);
-
+		startService(gocsdkService);
 		//stopService(gocsdkService);
 
 		conn = new MyConn();
@@ -231,8 +231,8 @@ public class MainActivity extends BaseActivity {
 				try {
 					iGocsdkService.inqueryHfpStatus();
 					iGocsdkService.musicUnmute();
-					iGocsdkService.getLocalName();
-					iGocsdkService.getPinCode();
+					//iGocsdkService.getLocalName();
+					//iGocsdkService.getPinCode();
 				} catch (RemoteException e) {
 					e.printStackTrace();
 				}

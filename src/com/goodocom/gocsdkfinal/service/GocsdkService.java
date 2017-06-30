@@ -64,6 +64,7 @@ public class GocsdkService extends Service {
 		
 		mSettings = GocsdkSettings.getInstance(this);
 		mGocsdkService = this;
+		Log.i("hcj.GocsdkExtService","onCreate mGocsdkService="+mGocsdkService);
 	}
 	
 	@Override
@@ -80,6 +81,7 @@ public class GocsdkService extends Service {
 		super.onDestroy();
 		
 		mGocsdkService = null;
+		Log.i("hcj.GocsdkExtService","onDestroy mGocsdkService="+mGocsdkService);
 	}
 
 
@@ -126,6 +128,11 @@ public class GocsdkService extends Service {
 				notifyConnectState(mConnected);
 			}else if(msg.what == MSG_IND_HFP_DISCONNECTED){
 				mConnected = false;
+				notifyConnectState(mConnected);
+			}else if(msg.what == MSG_IND_HFP_STATUS){
+				int hfpStatus = msg.arg1;
+				Log.i("hcj.serial", "MSG_IND_HFP_STATUS hfpStatus="+hfpStatus);
+				mConnected = (hfpStatus > 0);
 				notifyConnectState(mConnected);
 			}
 		};
@@ -290,6 +297,7 @@ public class GocsdkService extends Service {
 	public static final int MSG_IND_STOP_DISCOVERY = 17;
 	public static final int MSG_IND_HFP_CONNECTED = 18;
 	public static final int MSG_IND_HFP_DISCONNECTED = 19;
+	public static final int MSG_IND_HFP_STATUS = 20;
 	
 	public static String mLocalName = null;
 	public static String mPinCode = null;
@@ -315,7 +323,7 @@ public class GocsdkService extends Service {
 		startActivity(intent);
 	}
 
-	private void startOutCallActivity(String phoneNumber2, boolean isConnect) {
+	public void startOutCallActivity(String phoneNumber2, boolean isConnect) {
 		if(!isConnect){
 			placeCall(phoneNumber2);
 		}
@@ -326,7 +334,8 @@ public class GocsdkService extends Service {
 		startActivity(intent);
 	}
 
-	private void placeCall(String mLastNumber) {
+	public void placeCall(String mLastNumber) {
+		Log.i("hcj.GocsdkExtService", "placeCall mLastNumber="+mLastNumber);
 		if (mLastNumber.length() == 0)
 			return;
 		if (PhoneNumberUtils.isGlobalPhoneNumber(mLastNumber)) {
@@ -396,6 +405,7 @@ public class GocsdkService extends Service {
 	}
 	
 	private void notifyConnectState(boolean connected){
+		Log.i("hcj.serial", "notifyConnectState connected="+connected);
 		Intent intent = new Intent("com.goodocom.gocsdk.connect_state");
 		intent.putExtra("connected", connected);
 		this.sendBroadcast(intent);

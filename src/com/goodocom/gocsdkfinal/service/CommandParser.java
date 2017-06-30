@@ -448,6 +448,15 @@ public class CommandParser extends GocsdkCommon {
 		}else if (cmd.startsWith(Commands.IND_HFP_DISCONNECTED)) {
 			GocsdkCallbackImp.hfpStatus = 0;
 			mServiceHandler.sendMessage(mServiceHandler.obtainMessage(GocsdkService.MSG_IND_HFP_DISCONNECTED));
+		}else if (cmd.startsWith(Commands.IND_HFP_STATUS)) {
+			if (cmd.length() < 3) {
+				
+			} else {
+				int status = Integer.parseInt(cmd.substring(2, 3));
+				onHfpStatus(status);
+				Log.i("hcj.serial", "IND_HFP_STATUS status="+GocsdkCallbackImp.hfpStatus);
+				mServiceHandler.sendMessage(mServiceHandler.obtainMessage(GocsdkService.MSG_IND_HFP_STATUS,GocsdkCallbackImp.hfpStatus,0));
+			}
 		}
 		/*else if (cmd.startsWith(Commands.IND_OUTGOING_TALKING_NUMBER)) {
 
@@ -458,5 +467,31 @@ public class CommandParser extends GocsdkCommon {
 			}
 		}*/
 		return false;
+	}
+	
+	public void onHfpStatus(int status){
+		switch (status) {
+		case 0:
+			GocsdkCallbackImp.hfpStatus = 0;
+			break;
+		case 1:
+			GocsdkCallbackImp.hfpStatus = 0;
+			break;
+		case 2:
+			GocsdkCallbackImp.hfpStatus = 0;
+			break;
+		case 3:
+			GocsdkCallbackImp.hfpStatus = 1;
+			break;
+		case 4:
+			GocsdkCallbackImp.hfpStatus = 5;
+			break;
+		case 5:
+			GocsdkCallbackImp.hfpStatus = 4;
+			break;
+		case 6:
+			GocsdkCallbackImp.hfpStatus = 6;
+			break;
+		}
 	}
 }

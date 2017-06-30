@@ -4,6 +4,7 @@ import com.goodocom.gocsdk.IGocsdkCallback;
 import com.goodocom.gocsdk.IGocsdkExt;
 import com.goodocom.gocsdk.IGocsdkService;
 import com.goodocom.gocsdkfinal.GocsdkSettings;
+import com.goodocom.gocsdkfinal.R;
 
 import android.app.Service;
 import android.content.ComponentName;
@@ -12,7 +13,9 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.IBinder;
 import android.os.RemoteException;
+import android.text.TextUtils;
 import android.util.Log;
+import android.widget.Toast;
 
 public class GocsdkExtService extends Service{
 	private static final String TAG = "hcj.GocsdkExtService";
@@ -27,7 +30,7 @@ public class GocsdkExtService extends Service{
 		@Override
 		public void onServiceConnected(ComponentName name, IBinder service) {
 			mGocsdkService = GocsdkService.getInstance();
-			Log.i(TAG,"onServiceConnected mGocsdkService="+mGocsdkService);
+			Log.i(TAG,"onServiceConnected mGocsdkService="+mGocsdkService+",btConnected="+mGocsdkService.isConnected());
 		}
 
 		@Override
@@ -78,6 +81,11 @@ public class GocsdkExtService extends Service{
 		@Override
 		public boolean isBtConnected() throws RemoteException {
 			return (mGocsdkService != null) ? mGocsdkService.isConnected() : false;
+		}
+
+		@Override
+		public void dial(String number) throws RemoteException {			
+			mGocsdkService.placeCall(number);
 		}
 
 	};
