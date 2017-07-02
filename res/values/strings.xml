@@ -6,7 +6,7 @@
     <string name="hello_world">Hello world!</string>
     <string name="warning_connect">Device not connected!</string>
     <string name="device_phone">Phone</string>
-    <string name="device_car">Car</string>
+    <string name="device_car">Watch</string>
     <string name="search_done">Search done</string>
     <string name="device_connected">device connected</string>
     <string name="warning_input_number">No number</string>

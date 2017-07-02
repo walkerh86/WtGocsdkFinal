@@ -6,6 +6,7 @@ import com.goodocom.gocsdkfinal.service.GocsdkCallbackImp;
 
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.media.AudioManager;
@@ -21,6 +22,7 @@ import android.widget.Chronometer;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
+import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -37,7 +39,11 @@ public class CallActivity extends Activity implements OnClickListener {
 	private ImageView iv_number;
 	private ImageView iv_guaduan;
 	private ImageView iv_qieshengdao;
-	private ImageView iv_bujingyin;
+	
+	private SeekBar mVolSeekBar;
+    private AudioManager mAudioManager;
+	private ImageView iv_bujingyin;	
+	private View mMainView;
 
 	// flag
 	private boolean isShowNumber = false;
@@ -228,6 +234,29 @@ public class CallActivity extends Activity implements OnClickListener {
 		iv_guaduan.setOnClickListener(this);
 		iv_qieshengdao.setOnClickListener(this);
 		iv_bujingyin.setOnClickListener(this);
+		
+		mMainView = findViewById(R.id.main_view);
+		
+		mAudioManager = (AudioManager)getSystemService(Context.AUDIO_SERVICE);
+		 mVolSeekBar = (SeekBar)findViewById(R.id.wt_vol_bar);
+		 mVolSeekBar.setMax(mAudioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC));
+		 mVolSeekBar.setProgress(mAudioManager.getStreamVolume(AudioManager.STREAM_MUSIC));
+		 mVolSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+		 	@Override
+			public void onStopTrackingTouch(SeekBar seekBar) {
+				mAudioManager.setStreamVolume(AudioManager.STREAM_MUSIC, mVolSeekBar.getProgress(), 0);
+		 	}
+			@Override
+			public void onStartTrackingTouch(SeekBar seekBar) {
+		 	}
+			@Override
+			public void onProgressChanged(SeekBar seekBar, int progress,boolean fromUser) {
+		 	}
+		 });
+		 View volDnView = findViewById(R.id.wt_btn_vol_dn);
+		 volDnView.setOnClickListener(this);
+		 View volUpView = findViewById(R.id.wt_btn_vol_up);
+		 volUpView.setOnClickListener(this);
 	}
 
 	@Override
@@ -273,6 +302,14 @@ public class CallActivity extends Activity implements OnClickListener {
 			break;
 		case R.id.iv_jinghao:
 			break;
+		case R.id.wt_btn_vol_dn:
+            mAudioManager.adjustStreamVolume(AudioManager.STREAM_MUSIC, AudioManager.ADJUST_LOWER,  0);
+            mVolSeekBar.setProgress(mAudioManager.getStreamVolume(AudioManager.STREAM_MUSIC));
+            break;
+        case R.id.wt_btn_vol_up:
+            mAudioManager.adjustStreamVolume(AudioManager.STREAM_MUSIC, AudioManager.ADJUST_RAISE,  0);
+            mVolSeekBar.setProgress(mAudioManager.getStreamVolume(AudioManager.STREAM_MUSIC));
+            break;
 		}
 	}
 
@@ -311,8 +348,10 @@ public class CallActivity extends Activity implements OnClickListener {
 		isShowNumber = !isShowNumber;
 		if (isShowNumber) {
 			ll_number.setVisibility(View.VISIBLE);
+			mMainView.setVisibility(View.INVISIBLE);
 		} else {
 			ll_number.setVisibility(View.INVISIBLE);
+			mMainView.setVisibility(View.VISIBLE);
 		}
 	}
 

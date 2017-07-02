@@ -7,10 +7,16 @@
     android:orientation="vertical" >
 
     <FrameLayout
-        android:id="@+id/rl_callinfo"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_weight="0" >
+        android:layout_height="0dp"
+        android:layout_weight="1" >
+        
+    <FrameLayout
+        android:id="@+id/main_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_weight="0"
+        android:paddingTop="10dp" >
 
         <RelativeLayout
             android:id="@+id/rl_call_pager"
@@ -78,17 +84,79 @@
                 android:textColor="#fff"
                 android:textSize="23sp" />
         </RelativeLayout>
-    </FrameLayout>
+        
+        <LinearLayout
+        android:id="@+id/ll_action"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginTop="10dp"
+        android:orientation="horizontal" >        
 
+        <ImageView
+            android:id="@+id/iv_guaduan"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:src="@drawable/btn_jianpan_guaduan_selector" />
+
+        <ImageView
+            android:id="@+id/iv_qieshengdao"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:src="@drawable/btn_jianpan_qieshengdao_selector" />
+
+        <ImageView
+            android:id="@+id/iv_bujingyin"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:src="@drawable/btn_jianpan_bujingyin_selector" />
+    </LinearLayout>
+    
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_marginTop="0dp"
+        android:layout_gravity="bottom|center_horizontal"
+        android:paddingLeft="20dp"
+        android:paddingRight="20dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <ImageView 
+        	android:id="@+id/wt_btn_vol_dn"
+        	android:layout_width="40dp"
+        	android:layout_height="40dp"
+        	android:scaleType="centerInside"
+        	android:background="?android:attr/selectableItemBackground"
+        	android:src="@drawable/wt_incall_vol_minus"/>
+        <SeekBar 
+        	android:id="@+id/wt_vol_bar"
+        	android:layout_width="0dp"
+        	android:layout_height="wrap_content"
+        	android:layout_weight="1"
+        	android:layout_marginLeft="6dp"
+        	android:layout_marginRight="6dp"
+        	android:layout_gravity="center_vertical"/>
+        <ImageView 
+        	android:id="@+id/wt_btn_vol_up"
+        	android:layout_width="40dp"
+        	android:layout_height="40dp"
+        	android:scaleType="centerInside"
+        	android:background="?android:attr/selectableItemBackground"
+        	android:src="@drawable/wt_incall_vol_plus"/>
+    </LinearLayout>
+    
+    </FrameLayout>  
+    
     <LinearLayout
         android:id="@+id/ll_number"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
+        android:layout_height="match_parent"
         android:orientation="vertical"
         android:paddingLeft="0dp"
         android:paddingRight="0dp"
-        android:paddingTop="0dp"
+        android:paddingTop="10dp"
         android:paddingBottom="0dp"
         android:visibility="invisible" >
 
@@ -204,40 +272,13 @@
                 android:src="@drawable/btn_jianpan_jinghao_selector" />
         </LinearLayout>
     </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/ll_action"
-        android:layout_width="match_parent"
-        android:layout_height="64px"
-        android:orientation="horizontal" >
-
-        <ImageView
+    
+    </FrameLayout>
+    
+    <ImageView
             android:id="@+id/iv_number"
-            android:layout_width="0dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
             android:src="@drawable/btn_jianpan_selector" />
-
-        <ImageView
-            android:id="@+id/iv_guaduan"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:src="@drawable/btn_jianpan_guaduan_selector" />
-
-        <ImageView
-            android:id="@+id/iv_qieshengdao"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:src="@drawable/btn_jianpan_qieshengdao_selector" />
-
-        <ImageView
-            android:id="@+id/iv_bujingyin"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:src="@drawable/btn_jianpan_bujingyin_selector" />
-    </LinearLayout>
 
 </LinearLayout>
