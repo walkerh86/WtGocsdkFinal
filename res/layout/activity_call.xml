@@ -148,7 +148,7 @@
     </LinearLayout>
     
     </FrameLayout>  
-    
+           
     <LinearLayout
         android:id="@+id/ll_number"
         android:layout_width="match_parent"
@@ -156,9 +156,17 @@
         android:orientation="vertical"
         android:paddingLeft="0dp"
         android:paddingRight="0dp"
-        android:paddingTop="10dp"
+        android:paddingTop="4dp"
         android:paddingBottom="0dp"
         android:visibility="invisible" >
+    
+        <com.goodocom.gocsdkfinal.view.DigitsEditText
+            android:id="@+id/dtmf_input"
+            android:layout_width="match_parent"
+            android:layout_height="52px"
+            android:textColor="#ffffffff"
+            android:textSize="24sp"
+            />
 
         <LinearLayout
             android:layout_width="match_parent"

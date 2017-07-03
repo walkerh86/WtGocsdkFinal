@@ -1,5 +1,7 @@
 package com.goodocom.gocsdkfinal.activity;
 
+import java.util.HashMap;
+
 import com.goodocom.gocsdkfinal.R;
 import com.goodocom.gocsdkfinal.db.Database;
 import com.goodocom.gocsdkfinal.service.GocsdkCallbackImp;
@@ -16,17 +18,21 @@ import android.os.RemoteException;
 import android.os.SystemClock;
 import android.telephony.PhoneNumberUtils;
 import android.text.TextUtils;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Chronometer;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.util.Log;
 
-public class CallActivity extends Activity implements OnClickListener {
+public class CallActivity extends Activity implements OnClickListener,View.OnTouchListener {
+	private static final String TAG = "hcj.CallActivity";
 	public static final int MSG_CALL_STATUS = 0;// 鎷ㄥ嚭鐢佃瘽
 	public static final int Msg_CONNECT = 1;// 鎺ラ��
 	public static final int MSG_INCOMING_HANGUP = 2;// 鎷掓帴
@@ -55,6 +61,30 @@ public class CallActivity extends Activity implements OnClickListener {
 	
 	private String callNumber;//鍓嶅彴鎷ㄥ彿
 	//private String calloutNumber;//鍚庡彴鎷ㄥ彿
+	
+    private EditText mDtmfDialerField;
+
+    /** Hash Map to map a view id to a character*/
+    private static final HashMap<Integer, Character> mDisplayMap =
+        new HashMap<Integer, Character>();
+
+    /** Set up the static maps*/
+    static {
+        // Map the buttons to the display characters
+        mDisplayMap.put(R.id.iv_one, '1');
+        mDisplayMap.put(R.id.iv_two, '2');
+        mDisplayMap.put(R.id.iv_three, '3');
+        mDisplayMap.put(R.id.iv_four, '4');
+        mDisplayMap.put(R.id.iv_five, '5');
+        mDisplayMap.put(R.id.iv_six, '6');
+        mDisplayMap.put(R.id.iv_seven, '7');
+        mDisplayMap.put(R.id.iv_eight, '8');
+        mDisplayMap.put(R.id.iv_nine, '9');
+        mDisplayMap.put(R.id.iv_zero, '0');
+        mDisplayMap.put(R.id.iv_jinghao, '#');
+        mDisplayMap.put(R.id.iv_xinghao, '*');
+    }
+
 	
 	private static Handler hand = null;
 	private Handler handler = new Handler() {
@@ -257,6 +287,12 @@ public class CallActivity extends Activity implements OnClickListener {
 		 volDnView.setOnClickListener(this);
 		 View volUpView = findViewById(R.id.wt_btn_vol_up);
 		 volUpView.setOnClickListener(this);
+		 
+		 mDtmfDialerField = (EditText) findViewById(R.id.dtmf_input);
+	     if (mDtmfDialerField != null) {
+	         mDtmfDialerField.setLongClickable(false);
+	         setupKeypad();
+	     }
 	}
 
 	@Override
@@ -383,4 +419,81 @@ public class CallActivity extends Activity implements OnClickListener {
 			}
 		}
 
+		
+		private void setupKeypad() {
+	        // for each view id listed in the displaymap
+	        View button;
+	        for (int viewId : mDisplayMap.keySet()) {
+	            // locate the view
+	            button = findViewById(viewId);
+	            // Setup the listeners for the buttons
+	            button.setOnTouchListener(this);
+	            button.setClickable(true);
+	            //button.setOnKeyListener(this);
+	            //button.setOnHoverListener(this);
+	            //button.setOnClickListener(this);
+	        }
+	    }
+		
+		@Override
+	    public boolean onTouch(View v, MotionEvent event) {
+	        int viewId = v.getId();
+
+	        // if the button is recognized
+	        if (mDisplayMap.containsKey(viewId)) {
+	            switch (event.getAction()) {
+	                case MotionEvent.ACTION_DOWN:
+	                    // Append the character mapped to this button, to the display.
+	                    // start the tone
+	                    processDtmf(mDisplayMap.get(viewId),false);
+	                    break;
+	                case MotionEvent.ACTION_UP:
+	                case MotionEvent.ACTION_CANCEL:
+	                    // stop the tone on ANY other event, except for MOVE.
+	                    stopTone();
+	                    break;
+	            }
+	            // do not return true [handled] here, since we want the
+	            // press / click animation to be handled by the framework.
+	        }
+	        return false;
+	    }
+		
+		public final void processDtmf(char c, boolean timedShortTone) {
+	        // if it is a valid key, then update the display and send the dtmf tone.
+	        if (PhoneNumberUtils.is12Key(c)) {
+	            appendDigitsToField(c);
+	            // Plays the tone through CallCommandService
+	            //CallCommandClient.getInstance().playDtmfTone(c, timedShortTone);
+	            try {
+					MainActivity.getService().phoneTransmitDTMFCode(c);
+				} catch (RemoteException e) {
+					Log.i(TAG, "processDtmf e="+e);
+				}
+	        } else {
+	        	Log.i(TAG, "processDtmf is12Key false");
+	        }
+	    }
+
+	    /**
+	     * Stops the local tone based on the phone type.
+	     */
+	    public void stopTone() {
+	        //CallCommandClient.getInstance().stopDtmfTone();
+	    }
+	    
+	    public void appendDigitsToField(char digit) {
+	        if (mDtmfDialerField != null) {
+	            // TODO: maybe *don't* manually append this digit if
+	            // mDialpadDigits is focused and this key came from the HW
+	            // keyboard, since in that case the EditText field will
+	            // get the key event directly and automatically appends
+	            // whetever the user types.
+	            // (Or, a cleaner fix would be to just make mDialpadDigits
+	            // *not* handle HW key presses.  That seems to be more
+	            // complicated than just setting focusable="false" on it,
+	            // though.)
+	            mDtmfDialerField.getText().append(digit);
+	        }
+	    }
 }
