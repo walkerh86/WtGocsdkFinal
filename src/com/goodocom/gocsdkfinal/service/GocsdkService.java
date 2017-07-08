@@ -26,6 +26,7 @@ import android.os.Looper;
 import android.os.PowerManager;
 import android.os.RemoteCallbackList;
 import android.telephony.PhoneNumberUtils;
+import android.telephony.TelephonyManager;
 import android.util.Log;
 
 import android.text.TextUtils;
@@ -321,6 +322,8 @@ public class GocsdkService extends Service {
 		}
 		intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_SINGLE_TOP);
 		startActivity(intent);
+		
+		mCallState = BT_CALL_STATE_INCOMING;
 	}
 
 	public void startOutCallActivity(String phoneNumber2, boolean isConnect) {
@@ -345,10 +348,14 @@ public class GocsdkService extends Service {
 				return;
 			}
 			write(Commands.DIAL+mLastNumber);
+			
+			mCallState = BT_CALL_STATE_DIALING;
 		}
 	}
 
 	private void callhangUp(){
+		mCallState = BT_CALL_STATE_IDLE;
+		
 		Handler handler = InComingActivity.getHandler();
 		if(handler != null){
 			handler.sendEmptyMessage(InComingActivity.MSG_INCOMINNG_HANGUP);
@@ -360,6 +367,8 @@ public class GocsdkService extends Service {
 	}
 
 	private void callConnected(){
+		mCallState = BT_CALL_STATE_INCALL;
+		
 		Handler handler = InComingActivity.getHandler();
 		if(handler != null){
 			handler.sendEmptyMessage(InComingActivity.MSG_INCOMINNG_HANGUP);
@@ -388,6 +397,7 @@ public class GocsdkService extends Service {
 	private static final int BT_STATE_ON = 1;
 	private int mBtState = BT_STATE_UNKOWN;
 	public boolean isOpened(){
+		Log.i(GocsdkExtService.TAG, "isConnected mBtState="+mBtState);
 		return mBtState == BT_STATE_ON;
 	}
 
@@ -401,6 +411,7 @@ public class GocsdkService extends Service {
 	
 	private boolean mConnected = false;
 	public boolean isConnected(){
+		Log.i(GocsdkExtService.TAG, "isConnected mConnected="+mConnected);
 		return mConnected;
 	}
 	
@@ -409,6 +420,45 @@ public class GocsdkService extends Service {
 		Intent intent = new Intent("com.goodocom.gocsdk.connect_state");
 		intent.putExtra("connected", connected);
 		this.sendBroadcast(intent);
+	}
+	
+	private static final int BT_CALL_STATE_IDLE = 0;
+	private static final int BT_CALL_STATE_INCOMING = 1;
+	private static final int BT_CALL_STATE_DIALING = 2;
+	private static final int BT_CALL_STATE_INCALL = 3;
+	private int mCallState = BT_CALL_STATE_IDLE;
+	public boolean isInCall(){
+		Log.i(GocsdkExtService.TAG, "isInCall mCallState="+mCallState);
+		return mCallState == BT_CALL_STATE_INCOMING
+				|| mCallState == BT_CALL_STATE_DIALING
+                || mCallState == BT_CALL_STATE_INCALL;
+	}
+	
+	public void endCall(){
+		Log.i(GocsdkExtService.TAG, "endCall mCallState="+mCallState);
+		if(mCallState == BT_CALL_STATE_INCOMING){
+			Handler handler = InComingActivity.getHandler();
+			if(handler != null){
+				handler.sendEmptyMessage(InComingActivity.MSG_INCOMINNG_HANGUP);
+			}else{
+				
+			}
+		}else if(mCallState == BT_CALL_STATE_DIALING || mCallState == BT_CALL_STATE_INCALL){
+			handler = CallActivity.getHandler();
+			if(handler != null){
+				handler.sendEmptyMessage(CallActivity.MSG_INCOMING_HANGUP);
+			}
+		}
+	}
+	
+	public void acceptCall(){
+		Log.i(GocsdkExtService.TAG, "acceptCall mCallState="+mCallState);
+		if(mCallState == BT_CALL_STATE_INCOMING){
+			Handler handler = InComingActivity.getHandler();
+			if(handler != null){
+				handler.sendEmptyMessage(InComingActivity.MSG_INCOMING_ANSWER);
+			}
+		}
 	}
 	
 }

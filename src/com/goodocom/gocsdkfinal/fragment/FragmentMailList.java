@@ -171,6 +171,11 @@ public class FragmentMailList extends Fragment {
 			}
 		});
 		hand = handler;
+		//load from db
+		if(contacts.size() > 0){
+			rl_downloading.setVisibility(View.GONE);
+			lv_content.setVisibility(View.VISIBLE);
+		}
 		return view;
 	}
 	private void clickItemCallPhone(int position) {

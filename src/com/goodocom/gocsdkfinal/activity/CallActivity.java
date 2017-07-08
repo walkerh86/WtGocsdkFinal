@@ -21,6 +21,7 @@ import android.text.TextUtils;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.WindowManager;
 import android.widget.Chronometer;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -136,6 +137,13 @@ public class CallActivity extends Activity implements OnClickListener,View.OnTou
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+
+		getWindow().addFlags(
+		        WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED
+		        | WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD
+		        //| WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON
+		        | WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON);
+		
 		setContentView(R.layout.activity_call);
 		initView();
 		initData();

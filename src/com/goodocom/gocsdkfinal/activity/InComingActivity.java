@@ -21,6 +21,7 @@ import android.widget.TextView;
 public class InComingActivity extends Activity implements OnClickListener {
 	public static final int MSG_INCOMINNG_HANGUP = 0;
 	public static final int MSG_INCOMING_CONNECTION = 1;
+	public static final int MSG_INCOMING_ANSWER = 2;
 	
 	private ImageView iv_connect;
 	private ImageView iv_hangup;
@@ -42,6 +43,13 @@ public class InComingActivity extends Activity implements OnClickListener {
 				if(incomingNumber!=null){
 					System.out.println("来电了，你到底接没接");
 					connectInComing(incomingNumber);
+				}
+				break;
+			case MSG_INCOMING_ANSWER:
+				try {
+					MainActivity.getService().phoneAnswer();
+				} catch (RemoteException e) {
+					e.printStackTrace();
 				}
 				break;
 			}

@@ -18,7 +18,7 @@ import android.util.Log;
 import android.widget.Toast;
 
 public class GocsdkExtService extends Service{
-	private static final String TAG = "hcj.GocsdkExtService";
+	public static final String TAG = "hcj.GocsdkExtService";
 	private GocsdkSettings mSettings;
 	//private Handler mHandler = new Handler();
 	
@@ -30,7 +30,7 @@ public class GocsdkExtService extends Service{
 		@Override
 		public void onServiceConnected(ComponentName name, IBinder service) {
 			mGocsdkService = GocsdkService.getInstance();
-			Log.i(TAG,"onServiceConnected mGocsdkService="+mGocsdkService+",btConnected="+mGocsdkService.isConnected());
+			Log.i(TAG,"onServiceConnected mGocsdkService="+mGocsdkService);
 		}
 
 		@Override
@@ -64,9 +64,10 @@ public class GocsdkExtService extends Service{
 	}
 	
 	private IGocsdkExt.Stub mBinder = new IGocsdkExt.Stub(){
-
+		
 		@Override
 		public void setBtSwitch(boolean open) throws RemoteException {
+			Log.i(TAG, "setBtSwitch mGocsdkService="+mGocsdkService);
 			if(mGocsdkService != null){
 				mGocsdkService.setBtSwitch(open);
 			}
@@ -84,8 +85,35 @@ public class GocsdkExtService extends Service{
 		}
 
 		@Override
-		public void dial(String number) throws RemoteException {			
+		public void dial(String number) throws RemoteException {
+			if(mGocsdkService == null){
+				return;
+			}
 			mGocsdkService.placeCall(number);
+		}
+		
+		@Override
+		public boolean isInCall() throws RemoteException {
+			if(mGocsdkService == null){
+				return false;
+			}
+			return mGocsdkService.isInCall();
+		}
+		
+		@Override
+		public void endCall() throws RemoteException {
+			if(mGocsdkService == null){
+				return;
+			}
+			mGocsdkService.endCall();
+		}
+		
+		@Override
+		public void acceptCall() throws RemoteException {
+			if(mGocsdkService == null){
+				return;
+			}
+			mGocsdkService.acceptCall();
 		}
 
 	};
