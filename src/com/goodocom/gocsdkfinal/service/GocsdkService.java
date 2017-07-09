@@ -6,12 +6,14 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 import com.goodocom.gocsdk.IGocsdkCallback;
+import com.goodocom.gocsdk.IGocsdkServiceSimple;
 import com.goodocom.gocsdk.SerialPort;
 import com.goodocom.gocsdkfinal.Commands;
 import com.goodocom.gocsdkfinal.Config;
 import com.goodocom.gocsdkfinal.GocsdkSettings;
 import com.goodocom.gocsdkfinal.Ringer;
 import com.goodocom.gocsdkfinal.activity.CallActivity;
+import com.goodocom.gocsdkfinal.activity.ChooseCallActivity;
 import com.goodocom.gocsdkfinal.activity.InComingActivity;
 import com.goodocom.gocsdkfinal.db.Database;
 
@@ -25,6 +27,8 @@ import android.os.IBinder;
 import android.os.Looper;
 import android.os.PowerManager;
 import android.os.RemoteCallbackList;
+import android.os.RemoteException;
+import android.telecom.TelecomManager;
 import android.telephony.PhoneNumberUtils;
 import android.telephony.TelephonyManager;
 import android.util.Log;
@@ -33,7 +37,7 @@ import android.text.TextUtils;
 import android.database.sqlite.SQLiteDatabase;
 
 public class GocsdkService extends Service {
-	public static final String TAG = "GocsdkService";
+	public static final String TAG = "hcj.serial";
 	public static final int MSG_START_SERIAL = 1;//串口
 	public static final int MSG_SERIAL_RECEIVED = 2; //接收到串口信息
 	private static final int RESTART_DELAY = 2000; // ms
@@ -50,6 +54,60 @@ public class GocsdkService extends Service {
 
 	private GocsdkSettings mSettings;
 	private static GocsdkService mGocsdkService;
+	
+	private IGocsdkServiceSimple.Stub mIGocsdkServiceSimple = new IGocsdkServiceSimple.Stub(){
+		@Override
+		public void sendCommand(String cmd) throws RemoteException {
+			Log.i(TAG, "sendCommand:"+cmd);
+			write(cmd);
+		}
+
+		@Override
+		public void registerCallback(IGocsdkCallback callback) throws RemoteException {
+			GocsdkService.this.registerCallback(callback);
+		}
+		
+		@Override
+		public void unregisterCallback(IGocsdkCallback callback) throws RemoteException {
+			GocsdkService.this.unregisterCallback(callback);
+		}
+
+		@Override
+		public void setBtSwitch(boolean open) throws RemoteException {
+			GocsdkService.this.setBtSwitch(open);
+		}
+
+		@Override
+		public boolean isBtOpen() throws RemoteException {
+			return GocsdkService.this.isOpened();
+		}
+
+		@Override
+		public boolean isBtConnected() throws RemoteException {
+			return GocsdkService.this.isConnected();
+		}
+
+		@Override
+		public void dial(String number) throws RemoteException {
+			GocsdkService.this.placeCall(number);
+		}
+
+		@Override
+		public boolean isInCall() throws RemoteException {
+			// TODO Auto-generated method stub
+			return GocsdkService.this.isInCall();
+		}
+
+		@Override
+		public void endCall() throws RemoteException {
+			GocsdkService.this.endCall();
+		}
+
+		@Override
+		public void acceptCall() throws RemoteException {
+			GocsdkService.this.acceptCall();
+		}		
+	};
 	
 	public static GocsdkService getInstance(){
 		return mGocsdkService;
@@ -142,7 +200,8 @@ public class GocsdkService extends Service {
 	@Override
 	public IBinder onBind(Intent intent) {
 		isBehind = false;
-		return new GocsdkServiceImp(this);
+		//return new GocsdkServiceImp(this);
+		return mIGocsdkServiceSimple;
 	}
 	@Override
 	public boolean onUnbind(Intent intent) {
@@ -306,6 +365,11 @@ public class GocsdkService extends Service {
 	private String mIncomingNumber;
 
 	private void startInCallActivity(String phonenum){
+		if(isPhoneInUse()){
+			showChooseCall(phonenum);
+			return;
+		}
+		
 		mIncomingNumber = phonenum;
 		
 		String phonename = "";
@@ -459,6 +523,53 @@ public class GocsdkService extends Service {
 				handler.sendEmptyMessage(InComingActivity.MSG_INCOMING_ANSWER);
 			}
 		}
+	}
+
+//local interface @{	
+	public String getInCallNumber(){
+		return "15625255162";
+	}
+	
+	public String getInCallName(){
+		return "Hello";
+	}
+	
+	public void rejectIncoming(){
+		
+	}
+//local interface @}	
+	
+	private void showChooseCall(String number){
+		Log.i(TAG, "showChooseCall");
+		Intent intent = new Intent(this,ChooseCallActivity.class);
+		intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_SINGLE_TOP);
+		intent.putExtra("number", number);
+		String name = getContactsName(number);
+		if(name != null){
+			intent.putExtra("name", name);
+		}
+		this.startActivity(intent);
+	}
+	
+	private String getContactsName(String number){
+		SQLiteDatabase mDbDataBase = Database.getSystemDb();
+		Database.createTable(mDbDataBase,
+				Database.Sql_create_phonebook_tab);
+		String name = Database.queryPhoneName(mDbDataBase,
+				Database.PhoneBookTable, number);
+		return name;
+	}
+	
+	private TelecomManager getTelecomManager() {
+        return (TelecomManager) getSystemService(Context.TELECOM_SERVICE);
+    }
+	
+	private boolean isPhoneInUse() {
+        return getTelecomManager().isInCall();
+    }
+	
+	public void endLocalCall(){
+		getTelecomManager().endCall();
 	}
 	
 }

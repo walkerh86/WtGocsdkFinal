@@ -1,4 +1,6 @@
 eclipse.preferences.version=1
+encoding//src/com/goodocom/gocsdk/IGocsdkService.aidl=UTF-8
+encoding//src/com/goodocom/gocsdk/IGocsdkServiceSimple.aidl=UTF-8
 encoding//src/com/goodocom/gocsdkfinal/activity/CallActivity.java=UTF-8
 encoding//src/com/goodocom/gocsdkfinal/activity/MainActivity.java=UTF-8
 encoding//src/com/goodocom/gocsdkfinal/fragment/FragmentCallPhone.java=UTF-8
@@ -6,4 +8,5 @@ encoding//src/com/goodocom/gocsdkfinal/fragment/FragmentCallog.java=UTF-8
 encoding//src/com/goodocom/gocsdkfinal/fragment/FragmentMailList.java=UTF-8
 encoding//src/com/goodocom/gocsdkfinal/service/CommandParser.java=UTF-8
 encoding//src/com/goodocom/gocsdkfinal/service/GocsdkService.java=UTF-8
+encoding//src/com/goodocom/gocsdkfinal/service/GocsdkServiceHelper.java=UTF-8
 encoding//src/com/goodocom/gocsdkfinal/service/GocsdkServiceImp.java=UTF-8

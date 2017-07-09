@@ -7,202 +7,202 @@ interface IGocsdkService {
 	void closeBt();
 	void queryBtSwitch();
 	
-	//蓝牙状态回调注册去注销
+	//钃濈墮鐘舵�佸洖璋冩敞鍐屽幓娉ㄩ攢
 	void registerCallback(IGocsdkCallback callback);
-	// 注销蓝牙状态
+	// 娉ㄩ攢钃濈墮鐘舵��
 	void unregisterCallback(IGocsdkCallback callback);
 	
-	//注释后面带的为操作后相应的回调回复
+	//娉ㄩ噴鍚庨潰甯︾殑涓烘搷浣滃悗鐩稿簲鐨勫洖璋冨洖澶�
 //setting
-	//蓝牙协议软复位  ---》 onInitSucceed()
+	//钃濈墮鍗忚杞浣�  ---銆� onInitSucceed()
 	void restBluetooth();
 	
-	//获取本地蓝牙名称  ---》onCurrentDeviceName()
+	//鑾峰彇鏈湴钃濈墮鍚嶇О  ---銆媜nCurrentDeviceName()
 	void getLocalName();
 	
-	//设置本地蓝牙名称  ---》onCurrentDeviceName()
+	//璁剧疆鏈湴钃濈墮鍚嶇О  ---銆媜nCurrentDeviceName()
 	void setLocalName(String name);
 	
-	//获取蓝牙pin码  ---》onCurrentPinCode()
+	//鑾峰彇钃濈墮pin鐮�  ---銆媜nCurrentPinCode()
 	void getPinCode();
 	
-	//设置蓝牙pin码 4bit  ---》onCurrentPinCode()
+	//璁剧疆钃濈墮pin鐮� 4bit  ---銆媜nCurrentPinCode()
 	void setPinCode(String pincode);
 	
-	//获取本地蓝牙地址   ---》onLocalAddress()
+	//鑾峰彇鏈湴钃濈墮鍦板潃   ---銆媜nLocalAddress()
 	void getLocalAddress();
 	
-	//获取自动连接及自动接听   ---》onAutoConnectAccept()
+	//鑾峰彇鑷姩杩炴帴鍙婅嚜鍔ㄦ帴鍚�   ---銆媜nAutoConnectAccept()
 	void getAutoConnectAnswer();
 	
-	//设置自动连接  ---》onAutoConnectAccept()
+	//璁剧疆鑷姩杩炴帴  ---銆媜nAutoConnectAccept()
 	void setAutoConnect();
 	
-	//取消自动连接  ---》onAutoConnectAccept()
+	//鍙栨秷鑷姩杩炴帴  ---銆媜nAutoConnectAccept()
 	void cancelAutoConnect();
 	
-	//设置自动接听 ---》onAutoConnectAccept()
+	//璁剧疆鑷姩鎺ュ惉 ---銆媜nAutoConnectAccept()
 	void setAutoAnswer();
 	
-	//取消自动接听   ---》onAutoConnectAccept()
+	//鍙栨秷鑷姩鎺ュ惉   ---銆媜nAutoConnectAccept()
 	void cancelAutoAnswer();
 	
-	//获取蓝牙版本信息  ---》onVersionDate()
+	//鑾峰彇钃濈墮鐗堟湰淇℃伅  ---銆媜nVersionDate()
 	void getVersion();
 
 //connect info
-	//进入配对模式(蓝牙可见)  ---》onInPairMode()
+	//杩涘叆閰嶅妯″紡(钃濈墮鍙)  ---銆媜nInPairMode()
 	void setPairMode();
 	
-	//退出配对模式(蓝牙不可见)   ---》onExitPairMode()
+	//閫�鍑洪厤瀵规ā寮�(钃濈墮涓嶅彲瑙�)   ---銆媜nExitPairMode()
 	void cancelPairMode();
 
-	//连接上次连接过的设备   ---》onHfpConnected() onA2dpConnected() onCurrentAndPairList() etc;
+	//杩炴帴涓婃杩炴帴杩囩殑璁惧   ---銆媜nHfpConnected() onA2dpConnected() onCurrentAndPairList() etc;
 	void connectLast();
 	
-	//连接指定地址设备 地址可从搜索或配对列表中获取   ---》回调同上
+	//杩炴帴鎸囧畾鍦板潃璁惧 鍦板潃鍙粠鎼滅储鎴栭厤瀵瑰垪琛ㄤ腑鑾峰彇   ---銆嬪洖璋冨悓涓�
 	void connectDevice(String addr);
 	
-	//连接指定地址a2dp服务  ---》onA2dpConnected()
+	//杩炴帴鎸囧畾鍦板潃a2dp鏈嶅姟  ---銆媜nA2dpConnected()
 	void connectA2dp(String addr);
 
-	//连接指定地址hfp服务  ---》onHfpConnected()
+	//杩炴帴鎸囧畾鍦板潃hfp鏈嶅姟  ---銆媜nHfpConnected()
 	void connectHFP(String addr);
 	
-	//连接指定地址hid服务  ---》onHidConnected()
+	//杩炴帴鎸囧畾鍦板潃hid鏈嶅姟  ---銆媜nHidConnected()
 	void connectHid(String addr);
 	
-	//连接指定地址spp服务  ---》onSppConnect()
+	//杩炴帴鎸囧畾鍦板潃spp鏈嶅姟  ---銆媜nSppConnect()
 	void connectSpp(String addr);
 
-	//断开当前连接设备的所有服务 --->onSppDisconnect() onHfpDisconnected() onA2dpDisconnected() onHidDisconnected() etc;
+	//鏂紑褰撳墠杩炴帴璁惧鐨勬墍鏈夋湇鍔� --->onSppDisconnect() onHfpDisconnected() onA2dpDisconnected() onHidDisconnected() etc;
 	void disconnect();
 	
-	//断开当前连接设备的A2DP服务  ---》onA2dpDisconnected()
+	//鏂紑褰撳墠杩炴帴璁惧鐨凙2DP鏈嶅姟  ---銆媜nA2dpDisconnected()
 	void disconnectA2DP();
 
-	//断开当前连接设备的HFP服务  ---》onHfpDisconnected()
+	//鏂紑褰撳墠杩炴帴璁惧鐨凥FP鏈嶅姟  ---銆媜nHfpDisconnected()
 	void disconnectHFP();
 	
-	//断开当前连接设备的HID服务  ---》onHidDisconnected()
+	//鏂紑褰撳墠杩炴帴璁惧鐨凥ID鏈嶅姟  ---銆媜nHidDisconnected()
 	void disconnectHid();
 	
-	//断开当前连接设备的spp服务  ---》onSppDisconnect()
+	//鏂紑褰撳墠杩炴帴璁惧鐨剆pp鏈嶅姟  ---銆媜nSppDisconnect()
 	void disconnectSpp();
 	
 //devices list
-	//删除指定地址的配对列表  ---》删除成功回复IND_OK失败回复IND_ERROR(暂未做callback处理)
+	//鍒犻櫎鎸囧畾鍦板潃鐨勯厤瀵瑰垪琛�  ---銆嬪垹闄ゆ垚鍔熷洖澶岻ND_OK澶辫触鍥炲IND_ERROR(鏆傛湭鍋歝allback澶勭悊)
 	void deletePair(String addr);
 
-	//开始搜索周边蓝牙设备  ---》onDiscovery()
+	//寮�濮嬫悳绱㈠懆杈硅摑鐗欒澶�  ---銆媜nDiscovery()
 	void startDiscovery();
 
-	//获取当前配对列表  ---》onCurrentAndPairList()
+	//鑾峰彇褰撳墠閰嶅鍒楄〃  ---銆媜nCurrentAndPairList()
 	void getPairList();
 
-	//停止蓝牙搜索  ---》onDiscoveryDone()
+	//鍋滄钃濈墮鎼滅储  ---銆媜nDiscoveryDone()
 	void stopDiscovery();
 	
 //hfp
-	//来电接听  ---》onTalking()
+	//鏉ョ數鎺ュ惉  ---銆媜nTalking()
 	void phoneAnswer();
 
-	//挂断电话  ---》onHangUp()
+	//鎸傛柇鐢佃瘽  ---銆媜nHangUp()
 	void phoneHangUp();
 
-	//拨打电话  ---》onCallSucceed()
+	//鎷ㄦ墦鐢佃瘽  ---銆媜nCallSucceed()
 	void phoneDail(String phonenum);
 
-	//拨打分机号
+	//鎷ㄦ墦鍒嗘満鍙�
 	void phoneTransmitDTMFCode(char code);
 	
-	//切换声道到手机端  ---》onHfpRemote() onVoiceDisconnected()
+	//鍒囨崲澹伴亾鍒版墜鏈虹  ---銆媜nHfpRemote() onVoiceDisconnected()
 	void phoneTransfer();
 
-	//切换声道到车机端  ---》onHfpLocal() onVoiceConnected()
+	//鍒囨崲澹伴亾鍒拌溅鏈虹  ---銆媜nHfpLocal() onVoiceConnected()
 	void phoneTransferBack();
 	
-	//语音拨号  ---》onTalking()
+	//璇煶鎷ㄥ彿  ---銆媜nTalking()
 	void phoneVoiceDail();
 	
-	//取消语音拨号  ---》onHangUp()
+	//鍙栨秷璇煶鎷ㄥ彿  ---銆媜nHangUp()
 	void cancelPhoneVoiceDail();
 	
 //contacts
-	//电话本下载  ---onPhoneBook() onPhoneBookDone()
+	//鐢佃瘽鏈笅杞�  ---onPhoneBook() onPhoneBookDone()
 	void phoneBookStartUpdate();
 	
-	//通话记录下载  ---》onCalllog() onCalllogDone()
+	//閫氳瘽璁板綍涓嬭浇  ---銆媜nCalllog() onCalllogDone()
 	void callLogstartUpdate(int type);
 	
 //music
-	//音乐播放或暂停  ---》onMusicPlaying() onMusicStopped() onMusicInfo()
+	//闊充箰鎾斁鎴栨殏鍋�  ---銆媜nMusicPlaying() onMusicStopped() onMusicInfo()
 	void musicPlayOrPause();
 
-	//音乐停止  ---》onMusicStopped()
+	//闊充箰鍋滄  ---銆媜nMusicStopped()
 	void musicStop();
 
-	//上一曲
+	//涓婁竴鏇�
 	void musicPrevious();
 
-	//下一曲
+	//涓嬩竴鏇�
 	void musicNext();
 	
-	//音乐静音 用于混音处理
+	//闊充箰闈欓煶 鐢ㄤ簬娣烽煶澶勭悊
 	void musicMute();
 	
-	//音乐解除静音 配合mute实现混音处理
+	//闊充箰瑙ｉ櫎闈欓煶 閰嶅悎mute瀹炵幇娣烽煶澶勭悊
 	void musicUnmute();
 	
-	//音乐半音，用于Gps出声时混音处理
+	//闊充箰鍗婇煶锛岀敤浜嶨ps鍑哄０鏃舵贩闊冲鐞�
 	void musicBackground();
 	
-	//音乐恢复正常 配合半音处理Gps混音出声问题
+	//闊充箰鎭㈠姝ｅ父 閰嶅悎鍗婇煶澶勭悊Gps娣烽煶鍑哄０闂
 	void musicNormal();
 	
 //hid
-	//鼠标移动
-	//point 8bit， 4bit x 、4bit y
+	//榧犳爣绉诲姩
+	//point 8bit锛� 4bit x 銆�4bit y
 	void hidMouseMove(String point);
 	
-	//鼠标抬起
-	//point 8bit， 4bit x 、4bit y
+	//榧犳爣鎶捣
+	//point 8bit锛� 4bit x 銆�4bit y
 	void hidMouseUp(String point);
 	
-	//鼠标按下
-	//point 8bit， 4bit x 、4bit y
+	//榧犳爣鎸変笅
+	//point 8bit锛� 4bit x 銆�4bit y
 	void hidMousDown(String point);
 	
-	//hid home按钮
+	//hid home鎸夐挳
 	void hidHomeClick();
 	
-	//hid 返回按钮
+	//hid 杩斿洖鎸夐挳
 	void hidBackClick();
 	
-	//hid 菜单按钮
+	//hid 鑿滃崟鎸夐挳
 	void hidMenuClick(); 	
 	
 //spp
-	//spp 数据发送  --》onSppData()
+	//spp 鏁版嵁鍙戦��  --銆媜nSppData()
 	void sppSendData(String addr ,String data);	
 	
-	//获取蓝牙音乐信息 ---》onMusicInfo()
+	//鑾峰彇钃濈墮闊充箰淇℃伅 ---銆媜nMusicInfo()
 	void getMusicInfo();
 	
-	//查询当前hfp状态 ---》onHfpStatus()
+	//鏌ヨ褰撳墠hfp鐘舵�� ---銆媜nHfpStatus()
 	void inqueryHfpStatus();
 	
-	//查询当前连接设备的地址
+	//鏌ヨ褰撳墠杩炴帴璁惧鐨勫湴鍧�
 	void getCurrentDeviceAddr();
 		
-	//查询当前连接设备的名称
+	//鏌ヨ褰撳墠杩炴帴璁惧鐨勫悕绉�
 	void getCurrentDeviceName();
 	
-	//暂停下载联系人
+	//鏆傚仠涓嬭浇鑱旂郴浜�
 	void pauseDownLoadContact();
 	
 	
-	//以下功能暂未开放
+	//浠ヤ笅鍔熻兘鏆傛湭寮�鏀�
 	void setProfileEnabled(in boolean[] enabled);
 	void getProfileEnabled();
 	

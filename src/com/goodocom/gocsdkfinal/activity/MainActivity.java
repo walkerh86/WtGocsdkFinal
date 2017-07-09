@@ -1,6 +1,7 @@
 package com.goodocom.gocsdkfinal.activity;
 
 import com.goodocom.gocsdk.IGocsdkService;
+import com.goodocom.gocsdk.IGocsdkServiceSimple;
 import com.goodocom.gocsdkfinal.GocsdkSettings;
 import com.goodocom.gocsdkfinal.R;
 import com.goodocom.gocsdkfinal.db.Database;
@@ -12,6 +13,7 @@ import com.goodocom.gocsdkfinal.fragment.FragmentSetting;
 import com.goodocom.gocsdkfinal.receiver.BootReceiver;
 import com.goodocom.gocsdkfinal.service.GocsdkCallbackImp;
 import com.goodocom.gocsdkfinal.service.GocsdkService;
+import com.goodocom.gocsdkfinal.service.GocsdkServiceHelper;
 import com.goodocom.gocsdkfinal.service.PlayerService;
 import com.goodocom.gocsdkfinal.view.MyFragmentTabHost;
 
@@ -85,7 +87,7 @@ public class MainActivity extends BaseActivity {
 	public static boolean isInComing = false;
 
 	private Intent gocsdkService;
-	private MyConn conn;
+	//private MyConn conn;
 	public static GocsdkCallbackImp callback;
 	private AudioManager mAudioManager;
 	private static IGocsdkService iGocsdkService;
@@ -111,18 +113,24 @@ public class MainActivity extends BaseActivity {
 			FragmentSetting.class };
 	private String[] mString = new String[] { "閫氳瘽璁板綍", "閫氳褰�", "鎷ㄥ彿鐩�", "钃濈墮淇℃伅",
 			"钃濈墮閰嶅鍒楄〃", "璁剧疆" };
-
+	
+	private static GocsdkServiceHelper mGocsdkServiceHelper;
+	
 	private static Handler hand = null;
 
 	public static Handler getHandler() {
 		return hand;
 	}
-
+/*
 	// 鏆撮湶鏂规硶锛岃鍏朵粬椤甸潰鑳藉鑾峰彇涓婚〉闈㈢殑鍙傛暟
 	public static IGocsdkService getService() {
 		return iGocsdkService;
 	}
-
+*/
+	public static GocsdkServiceHelper getService(){
+		return mGocsdkServiceHelper;
+	}
+	
 	public boolean isConnected() {
 		return iGocsdkService != null;
 	}
@@ -142,20 +150,33 @@ public class MainActivity extends BaseActivity {
 		
 		mSettings = GocsdkSettings.getInstance(this);
 
-		System.out.println("涓荤晫闈㈠惎鍔ㄤ簡");
+		//System.out.println("涓荤晫闈㈠惎鍔ㄤ簡");
 		// 娉ㄥ唽寮�鏈哄箍鎾帴鏀惰��
 		myRegisterReceiver();
 
-		gocsdkService = new Intent(MainActivity.this, GocsdkService.class);
-		startService(gocsdkService);
+		//gocsdkService = new Intent(MainActivity.this, GocsdkService.class);
+		//startService(gocsdkService);
 		//stopService(gocsdkService);
 
-		conn = new MyConn();
-		bindService(gocsdkService, conn, BIND_AUTO_CREATE);
+		//conn = new MyConn();
+		//bindService(gocsdkService, conn, BIND_AUTO_CREATE);
 
 		// 寮�鍚挱鏀炬湇鍔�
 		Intent playerService = new Intent(this, PlayerService.class);
 		startService(playerService);
+		
+		mGocsdkServiceHelper = new GocsdkServiceHelper(new GocsdkServiceHelper.OnServiceConnectListener() {			
+			@Override
+			public void onServiceDisconnected() {
+				
+			}
+			
+			@Override
+			public void onServiceConnected(IGocsdkServiceSimple service) {
+				mGocsdkServiceHelper.registerCallback(callback);
+			}
+		});
+		mGocsdkServiceHelper.bindService(this);
 
 		// 鍒濆鍖栧竷灞�
 		initView();
@@ -175,17 +196,20 @@ public class MainActivity extends BaseActivity {
 		super.onDestroy();
 
 		// 娉ㄩ攢钃濈墮鍥炶皟
+		/*
 		try {
 			iGocsdkService.unregisterCallback(callback);
 
 		} catch (RemoteException e) {
 			e.printStackTrace();
-		}
+		}*/
 		// 娉ㄩ攢寮�鏈哄箍鎾�
 		unregisterReceiver(receiver);
 		// 瑙ｇ粦鏈嶅姟
-		unbindService(conn);
-		startService(gocsdkService);
+		//unbindService(conn);
+		//startService(gocsdkService);
+		mGocsdkServiceHelper.unregisterCallback(callback);
+		mGocsdkServiceHelper.unbindService(this);
 	}
 
 	private void myRegisterReceiver() {
@@ -194,7 +218,7 @@ public class MainActivity extends BaseActivity {
 		receiver = new BootReceiver();
 		registerReceiver(receiver, filter);
 	}
-
+/*
 	private class MyConn implements ServiceConnection {
 
 		@Override
@@ -239,7 +263,7 @@ public class MainActivity extends BaseActivity {
 			}
 		}, 500);
 	}
-
+*/
 	private void initView() {
 		tabhost = (MyFragmentTabHost) findViewById(android.R.id.tabhost);
 
@@ -489,7 +513,7 @@ public class MainActivity extends BaseActivity {
 	}
 
 	// 鎷ㄦ墦姝ｇ‘鐨勭數璇�
-	private static void placeCall(String mLastNumber) {
+	private /*static*/ void placeCall(String mLastNumber) {
 		if (mLastNumber.length() == 0)
 			return;
 		if (PhoneNumberUtils.isGlobalPhoneNumber(mLastNumber)) {

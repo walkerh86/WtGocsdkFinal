@@ -11,6 +11,7 @@ import com.goodocom.gocsdkfinal.activity.MainActivity;
 import com.goodocom.gocsdkfinal.db.Database;
 import com.goodocom.gocsdkfinal.domain.CallLogInfo;
 import com.goodocom.gocsdkfinal.service.GocsdkCallbackImp;
+import com.goodocom.gocsdkfinal.service.GocsdkServiceHelper;
 import com.goodocom.gocsdkfinal.view.MyFragmentTabHost;
 import com.goodocom.gocsdkfinal.view.NoScrollViewPager;
 
@@ -140,7 +141,7 @@ public class FragmentCallog extends Fragment implements OnClickListener {
 	private Handler mainHandler;
 	private ImageView image_animation;
 	private RelativeLayout rl_downloading;
-
+	
 	public static Handler getHandler() {
 		return hand;
 	}

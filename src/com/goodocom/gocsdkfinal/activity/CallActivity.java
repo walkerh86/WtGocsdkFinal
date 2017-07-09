@@ -403,11 +403,11 @@ public class CallActivity extends Activity implements OnClickListener,View.OnTou
 	private void hangUp() {
 		
 		//Toast.makeText(this, "鎸傛柇", 0).show();
-		try {
+		//try {
 			MainActivity.getService().phoneHangUp();
-		} catch (RemoteException e) {
-			e.printStackTrace();
-		}
+		//} catch (RemoteException e) {
+			//e.printStackTrace();
+		//}
 		
 	}
 	

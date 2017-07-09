@@ -20,4 +20,7 @@
     <string name="bt_switch">bt switch</string>
     <string name="warning_set_share_contacts">Share contacts by bluetooth must be set</string>
     <string name="warning_share_contacts_fail">Share contacts by bluetooth is not set</string>
+    <string name="accept_bt_call">接听蓝牙来电</string>
+    <string name="reject_local_call">拒接蓝牙来电</string>
+    <string name ="show_call_title">蓝牙联系人来电</string>
 </resources>

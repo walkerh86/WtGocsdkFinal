@@ -356,7 +356,7 @@ public class CommandParser extends GocsdkCommon {
 					} else if (cmd.startsWith(Commands.IND_ERROR)) {
 
 					} else if (cmd.startsWith(Commands.IND_SET_PHONE_BOOK)) {
-						cbk.onPhoneBookNotShare();
+						//cbk.onPhoneBookNotShare();
 					}else {
 
 					}

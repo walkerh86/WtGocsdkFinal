@@ -40,5 +40,10 @@
        <item name="android:paddingTop">6px</item>
        <item name="android:paddingBottom">6px</item>
     </style>
+    
+    <style name="ChooseCallActivityTheme" parent="android:Theme.Holo.Dialog">
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowCloseOnTouchOutside">false</item>
+    </style>
 
 </resources>

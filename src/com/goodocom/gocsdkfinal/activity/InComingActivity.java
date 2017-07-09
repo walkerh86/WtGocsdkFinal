@@ -46,11 +46,11 @@ public class InComingActivity extends Activity implements OnClickListener {
 				}
 				break;
 			case MSG_INCOMING_ANSWER:
-				try {
+				//try {
 					MainActivity.getService().phoneAnswer();
-				} catch (RemoteException e) {
-					e.printStackTrace();
-				}
+				//} catch (RemoteException e) {
+					//e.printStackTrace();
+				//}
 				break;
 			}
 		};
@@ -101,11 +101,11 @@ public class InComingActivity extends Activity implements OnClickListener {
 	public void onClick(View v) {
 		switch (v.getId()) {
 		case R.id.iv_connect:
-			try {
+			//try {
 				MainActivity.getService().phoneAnswer();
-			} catch (RemoteException e) {
-				e.printStackTrace();
-			}
+			//} catch (RemoteException e) {
+				//e.printStackTrace();
+			//}
 			break;
 		case R.id.iv_hangup:
 			hangupInComing();
@@ -115,20 +115,20 @@ public class InComingActivity extends Activity implements OnClickListener {
 	}
 
 	private void hangupInComing() {
-		try {
+		//try {
 			MainActivity.getService().phoneHangUp();
-		} catch (RemoteException e) {
-			e.printStackTrace();
-		}
+		//} catch (RemoteException e) {
+			//e.printStackTrace();
+		//}
 		finish();
 	}
 
 	private void connectInComing(String incomingNumber2) {
-		try {
+		//try {
 			MainActivity.getService().phoneAnswer();
-		} catch (RemoteException e) {
-			e.printStackTrace();
-		}
+		//} catch (RemoteException e) {
+			//e.printStackTrace();
+		//}
 		Intent intent = new Intent();
 		intent.setComponent(new ComponentName(
 				"com.goodocom.gocsdkfinal",
