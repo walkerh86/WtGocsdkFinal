@@ -5,7 +5,7 @@ import java.util.HashMap;
 import com.goodocom.gocsdkfinal.R;
 import com.goodocom.gocsdkfinal.db.Database;
 import com.goodocom.gocsdkfinal.service.GocsdkCallbackImp;
-
+import com.goodocom.gocsdkfinal.service.GocsdkServiceHelper;
 
 import android.app.Activity;
 import android.content.Context;
@@ -37,6 +37,7 @@ public class CallActivity extends Activity implements OnClickListener,View.OnTou
 	public static final int MSG_CALL_STATUS = 0;// 鎷ㄥ嚭鐢佃瘽
 	public static final int Msg_CONNECT = 1;// 鎺ラ��
 	public static final int MSG_INCOMING_HANGUP = 2;// 鎷掓帴
+	public static final int MSG_HANGUP = 3;
 	private RelativeLayout rl_call_pager;
 	private RelativeLayout rl_connect;
 	private TextView tv_call_people_name;
@@ -114,6 +115,9 @@ public class CallActivity extends Activity implements OnClickListener,View.OnTou
 					}
 				}
 				break;
+			case MSG_HANGUP:
+				hangUp();
+				break;
 			}
 		};
 	};
@@ -134,9 +138,14 @@ public class CallActivity extends Activity implements OnClickListener,View.OnTou
 		return hand;
 	}
 	
+	private GocsdkServiceHelper mGocsdkServiceHelper;
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		
+		mGocsdkServiceHelper = new GocsdkServiceHelper(null);
+		mGocsdkServiceHelper.bindService(this);
 
 		getWindow().addFlags(
 		        WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED
@@ -155,6 +164,7 @@ public class CallActivity extends Activity implements OnClickListener,View.OnTou
 	public void onDestroy() {
 		super.onDestroy();
 		hand = null;
+		mGocsdkServiceHelper.unbindService(this);
 	}
 
 	private void isConnect() {
@@ -374,14 +384,14 @@ public class CallActivity extends Activity implements OnClickListener,View.OnTou
 			volume_flag = !volume_flag;
 			if (volume_flag) {// 鎵嬫満绔�
 				try {
-					MainActivity.getService().phoneTransfer();
+					mGocsdkServiceHelper.phoneTransfer();
 				} catch (RemoteException e1) {
 					e1.printStackTrace();
 				}
 				Toast.makeText(this, this.getString(R.string.device_phone), 0).show();
 			} else {// 杞︽満绔�
 				try {
-					MainActivity.getService().phoneTransferBack();
+					mGocsdkServiceHelper.phoneTransferBack();
 				} catch (RemoteException e1) {
 					e1.printStackTrace();
 				}
@@ -404,7 +414,7 @@ public class CallActivity extends Activity implements OnClickListener,View.OnTou
 		
 		//Toast.makeText(this, "鎸傛柇", 0).show();
 		//try {
-			MainActivity.getService().phoneHangUp();
+		mGocsdkServiceHelper.phoneHangUp();
 		//} catch (RemoteException e) {
 			//e.printStackTrace();
 		//}
@@ -412,7 +422,7 @@ public class CallActivity extends Activity implements OnClickListener,View.OnTou
 	}
 	
 	// 鎷ㄦ墦姝ｇ‘鐨勭數璇�
-		private static void placeCall(String mLastNumber) {
+		private /*static*/ void placeCall(String mLastNumber) {
 			if (mLastNumber.length() == 0)
 				return;
 			if (PhoneNumberUtils.isGlobalPhoneNumber(mLastNumber)) {
@@ -420,7 +430,7 @@ public class CallActivity extends Activity implements OnClickListener,View.OnTou
 					return;
 				}
 				try {
-					MainActivity.getService().phoneDail(mLastNumber);
+					mGocsdkServiceHelper.phoneDail(mLastNumber);
 				} catch (RemoteException e) {
 					e.printStackTrace();
 				}
@@ -474,7 +484,7 @@ public class CallActivity extends Activity implements OnClickListener,View.OnTou
 	            // Plays the tone through CallCommandService
 	            //CallCommandClient.getInstance().playDtmfTone(c, timedShortTone);
 	            try {
-					MainActivity.getService().phoneTransmitDTMFCode(c);
+	            	mGocsdkServiceHelper.phoneTransmitDTMFCode(c);
 				} catch (RemoteException e) {
 					Log.i(TAG, "processDtmf e="+e);
 				}

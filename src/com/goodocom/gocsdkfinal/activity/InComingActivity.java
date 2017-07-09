@@ -3,6 +3,7 @@ package com.goodocom.gocsdkfinal.activity;
 import com.goodocom.gocsdkfinal.R;
 import com.goodocom.gocsdkfinal.Ringer;
 import com.goodocom.gocsdkfinal.domain.BlueToothPairedInfo;
+import com.goodocom.gocsdkfinal.service.GocsdkServiceHelper;
 
 import android.app.Activity;
 import android.content.ComponentName;
@@ -47,7 +48,7 @@ public class InComingActivity extends Activity implements OnClickListener {
 				break;
 			case MSG_INCOMING_ANSWER:
 				//try {
-					MainActivity.getService().phoneAnswer();
+				mGocsdkServiceHelper.phoneAnswer();
 				//} catch (RemoteException e) {
 					//e.printStackTrace();
 				//}
@@ -60,10 +61,14 @@ public class InComingActivity extends Activity implements OnClickListener {
 		return hand;
 	}
 
+	private GocsdkServiceHelper mGocsdkServiceHelper;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		
+		mGocsdkServiceHelper = new GocsdkServiceHelper(null);
+		mGocsdkServiceHelper.bindService(this);
 		
 		getWindow().addFlags(
 		        WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED
@@ -95,6 +100,7 @@ public class InComingActivity extends Activity implements OnClickListener {
 		if(mRinger.isRinging()){
 			mRinger.stopRing();
 		}
+		mGocsdkServiceHelper.unbindService(this);
 	}
 
 	@Override
@@ -102,7 +108,7 @@ public class InComingActivity extends Activity implements OnClickListener {
 		switch (v.getId()) {
 		case R.id.iv_connect:
 			//try {
-				MainActivity.getService().phoneAnswer();
+			mGocsdkServiceHelper.phoneAnswer();
 			//} catch (RemoteException e) {
 				//e.printStackTrace();
 			//}
@@ -116,7 +122,7 @@ public class InComingActivity extends Activity implements OnClickListener {
 
 	private void hangupInComing() {
 		//try {
-			MainActivity.getService().phoneHangUp();
+		mGocsdkServiceHelper.phoneHangUp();
 		//} catch (RemoteException e) {
 			//e.printStackTrace();
 		//}
@@ -125,7 +131,7 @@ public class InComingActivity extends Activity implements OnClickListener {
 
 	private void connectInComing(String incomingNumber2) {
 		//try {
-			MainActivity.getService().phoneAnswer();
+		mGocsdkServiceHelper.phoneAnswer();
 		//} catch (RemoteException e) {
 			//e.printStackTrace();
 		//}

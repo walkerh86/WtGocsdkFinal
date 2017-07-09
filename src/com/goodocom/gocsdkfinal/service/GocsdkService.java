@@ -256,6 +256,10 @@ public class GocsdkService extends Service {
 					
 					byte[] data = new byte[n];
 					System.arraycopy(buffer, 0, data, 0, n);
+					if(handler == null){
+						//Log.i(TAG, "thread exit by handle null");
+						//break;
+					}
 					handler.sendMessage(handler.obtainMessage(
 							MSG_SERIAL_RECEIVED, data));
 				}
@@ -420,29 +424,29 @@ public class GocsdkService extends Service {
 	private void callhangUp(){
 		mCallState = BT_CALL_STATE_IDLE;
 		
-		Handler handler = InComingActivity.getHandler();
-		if(handler != null){
-			handler.sendEmptyMessage(InComingActivity.MSG_INCOMINNG_HANGUP);
+		Handler tmphandler = InComingActivity.getHandler();
+		if(tmphandler != null){
+			tmphandler.sendEmptyMessage(InComingActivity.MSG_INCOMINNG_HANGUP);
 		}
-		handler = CallActivity.getHandler();
-		if(handler != null){
-			handler.sendEmptyMessage(CallActivity.MSG_INCOMING_HANGUP);
+		tmphandler = CallActivity.getHandler();
+		if(tmphandler != null){
+			tmphandler.sendEmptyMessage(CallActivity.MSG_INCOMING_HANGUP);
 		}
 	}
 
 	private void callConnected(){
 		mCallState = BT_CALL_STATE_INCALL;
 		
-		Handler handler = InComingActivity.getHandler();
-		if(handler != null){
-			handler.sendEmptyMessage(InComingActivity.MSG_INCOMINNG_HANGUP);
+		Handler tmphandler = InComingActivity.getHandler();
+		if(tmphandler != null){
+			tmphandler.sendEmptyMessage(InComingActivity.MSG_INCOMINNG_HANGUP);
 			write(Commands.ACCEPT_INCOMMING);
 			startOutCallActivity(mIncomingNumber, true);
 			return;
 		}
-		handler = CallActivity.getHandler();
-		if (handler != null) {
-			handler.sendEmptyMessage(CallActivity.Msg_CONNECT);
+		tmphandler = CallActivity.getHandler();
+		if (tmphandler != null) {
+			tmphandler.sendEmptyMessage(CallActivity.Msg_CONNECT);
 		}
 	}
 	
@@ -501,16 +505,18 @@ public class GocsdkService extends Service {
 	public void endCall(){
 		Log.i(GocsdkExtService.TAG, "endCall mCallState="+mCallState);
 		if(mCallState == BT_CALL_STATE_INCOMING){
-			Handler handler = InComingActivity.getHandler();
-			if(handler != null){
-				handler.sendEmptyMessage(InComingActivity.MSG_INCOMINNG_HANGUP);
+			Handler tmphandler = InComingActivity.getHandler();
+			if(tmphandler != null){
+				tmphandler.sendEmptyMessage(InComingActivity.MSG_INCOMINNG_HANGUP);
 			}else{
-				
+				write(Commands.REJECT_INCOMMMING);
 			}
 		}else if(mCallState == BT_CALL_STATE_DIALING || mCallState == BT_CALL_STATE_INCALL){
-			handler = CallActivity.getHandler();
-			if(handler != null){
-				handler.sendEmptyMessage(CallActivity.MSG_INCOMING_HANGUP);
+			Handler tmphandler = CallActivity.getHandler();
+			if(tmphandler != null){
+				tmphandler.sendEmptyMessage(CallActivity.MSG_HANGUP);
+			}else{
+				write(Commands.REJECT_INCOMMMING);
 			}
 		}
 	}
@@ -518,9 +524,9 @@ public class GocsdkService extends Service {
 	public void acceptCall(){
 		Log.i(GocsdkExtService.TAG, "acceptCall mCallState="+mCallState);
 		if(mCallState == BT_CALL_STATE_INCOMING){
-			Handler handler = InComingActivity.getHandler();
-			if(handler != null){
-				handler.sendEmptyMessage(InComingActivity.MSG_INCOMING_ANSWER);
+			Handler Handler  = InComingActivity.getHandler();
+			if(Handler  != null){
+				Handler .sendEmptyMessage(InComingActivity.MSG_INCOMING_ANSWER);
 			}
 		}
 	}
