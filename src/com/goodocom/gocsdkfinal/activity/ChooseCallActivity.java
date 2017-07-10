@@ -25,10 +25,12 @@ public class ChooseCallActivity extends Activity{
 		String name = intent.getStringExtra("name");
 		String number = intent.getStringExtra("number");
 		String showName = (name != null) ? name : number;
-		String showTitle = this.getString(R.string.show_call_title)+"\n"+showName;
+		String showTitle = this.getString(R.string.show_call_title);
 		
 		TextView titleView = (TextView)findViewById(R.id.title);
 		titleView.setText(showTitle);
+		TextView nameView = (TextView)findViewById(R.id.title_name);
+		nameView.setText(showName);
 		View acceptBt = findViewById(R.id.accept_bt);
 		acceptBt.setOnClickListener(mOnClickListener);
 		View rejectBt = findViewById(R.id.reject_bt);

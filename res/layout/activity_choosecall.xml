@@ -13,6 +13,15 @@
         android:textSize="28sp"
         />
     
+    <TextView
+        android:id="@+id/title_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:textColor="#ffffffff"
+        android:textSize="28sp"
+        />
+    
     <Button
         android:id="@+id/accept_bt"
         android:layout_width="match_parent"

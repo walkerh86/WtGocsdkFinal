@@ -447,7 +447,10 @@ public class GocsdkService extends Service {
 		tmphandler = CallActivity.getHandler();
 		if (tmphandler != null) {
 			tmphandler.sendEmptyMessage(CallActivity.Msg_CONNECT);
+			return;
 		}
+		
+		startOutCallActivity(mIncomingNumber, true);
 	}
 	
 	private boolean mBtSwitching = false;
