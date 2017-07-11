@@ -106,6 +106,11 @@ public class GocsdkService extends Service {
 		@Override
 		public void acceptCall() throws RemoteException {
 			GocsdkService.this.acceptCall();
+		}
+
+		@Override
+		public void showCallActivity(boolean showDialpad) throws RemoteException {
+			GocsdkService.this.showCallActivity(showDialpad);
 		}		
 	};
 	
@@ -123,7 +128,7 @@ public class GocsdkService extends Service {
 		
 		mSettings = GocsdkSettings.getInstance(this);
 		mGocsdkService = this;
-		Log.i("hcj.GocsdkExtService","onCreate mGocsdkService="+mGocsdkService);
+		Log.i(TAG,"onCreate mGocsdkService="+mGocsdkService);
 	}
 	
 	@Override
@@ -140,7 +145,7 @@ public class GocsdkService extends Service {
 		super.onDestroy();
 		
 		mGocsdkService = null;
-		Log.i("hcj.GocsdkExtService","onDestroy mGocsdkService="+mGocsdkService);
+		Log.i(TAG,"onDestroy mGocsdkService="+mGocsdkService);
 	}
 
 
@@ -171,7 +176,7 @@ public class GocsdkService extends Service {
 			}else if(msg.what == MSG_IND_HANG_UP){
 				callhangUp();
 			}else if(msg.what == MSG_IND_OUTGOING_TALKING_NUMBER){
-				startOutCallActivity((String) msg.obj, false);
+				startOutCallActivity((String) msg.obj, false, true);
 			}else if(msg.what == MSG_IND_TALKING){
 				callConnected();
 			}else if(msg.what == MSG_IND_CURRENT_DEVICE_NAME){
@@ -193,6 +198,8 @@ public class GocsdkService extends Service {
 				Log.i("hcj.serial", "MSG_IND_HFP_STATUS hfpStatus="+hfpStatus);
 				mConnected = (hfpStatus > 0);
 				notifyConnectState(mConnected);
+			}else if(msg.what == MSG_IND_AV_STATUS){
+				
 			}
 		};
 	};
@@ -291,7 +298,7 @@ public class GocsdkService extends Service {
 
 	public void write(String str) {
 		if (serialThread == null) return;
-		Log.i("hcj.serial","write cmd:"+str);
+		//Log.i("hcj.serial","write cmd:"+str);
 		serialThread.write((Commands.COMMAND_HEAD + str + "\r\n").getBytes());
 	}
 
@@ -306,7 +313,7 @@ public class GocsdkService extends Service {
 	}
 	
 	private void queryBtState(){
-		Log.i("hcj.serial", "queryBtState");
+		Log.i(TAG, "queryBtState");
 		//if(mBtState == BT_STATE_UNKOWN){
 			write("QS");
 		//}
@@ -362,6 +369,7 @@ public class GocsdkService extends Service {
 	public static final int MSG_IND_HFP_CONNECTED = 18;
 	public static final int MSG_IND_HFP_DISCONNECTED = 19;
 	public static final int MSG_IND_HFP_STATUS = 20;
+	public static final int MSG_IND_AV_STATUS = 21;
 	
 	public static String mLocalName = null;
 	public static String mPinCode = null;
@@ -393,16 +401,22 @@ public class GocsdkService extends Service {
 		
 		mCallState = BT_CALL_STATE_INCOMING;
 	}
-
-	public void startOutCallActivity(String phoneNumber2, boolean isConnect) {
-		if(!isConnect){
-			placeCall(phoneNumber2);
-		}
+	
+	public void startOutCallActivity(String number, boolean isConnect){
+		Log.i(TAG, "startOutCallActivity,number="+number);
 		Intent intent = new Intent(this, CallActivity.class);
-		intent.putExtra("callNumber", phoneNumber2);
+		intent.putExtra("callNumber", number);
 		intent.putExtra("isConnect", isConnect);
 		intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_SINGLE_TOP);
 		startActivity(intent);
+	}
+
+	public void startOutCallActivity(String number, boolean isConnect, boolean doDial) {
+		Log.i(TAG, "startOutCallActivity,number="+number+",doDial="+doDial);
+		if(doDial){
+			placeCall(number);
+		}
+		startOutCallActivity(number,isConnect);
 	}
 
 	public void placeCall(String mLastNumber) {
@@ -435,6 +449,7 @@ public class GocsdkService extends Service {
 	}
 
 	private void callConnected(){
+		Log.i(TAG, "callConnected");
 		mCallState = BT_CALL_STATE_INCALL;
 		
 		Handler tmphandler = InComingActivity.getHandler();
@@ -532,6 +547,48 @@ public class GocsdkService extends Service {
 				Handler .sendEmptyMessage(InComingActivity.MSG_INCOMING_ANSWER);
 			}
 		}
+	}
+	
+	public void showCallActivity(boolean showDialpad){
+		Log.i(GocsdkExtService.TAG,"showCallActivity");
+		if ((mCallState == BT_CALL_STATE_INCALL || mCallState == BT_CALL_STATE_DIALING) && !isShowingCallUi()) {
+			startOutCallActivity(mIncomingNumber, (mCallState == BT_CALL_STATE_INCALL));
+		}else if((mCallState == BT_CALL_STATE_INCOMING) && !isShowingInComingUi()){
+			startInCallActivity(mIncomingNumber);
+		}else{
+			Log.i(GocsdkExtService.TAG,"showCallActivity dummy");
+		}
+	}
+//remote interface @}
+	
+	private InComingActivity mInComingActivity;
+	public void setInComingActivity(InComingActivity activity){
+		mInComingActivity = activity;
+	}
+	
+	private boolean isShowingInComingUi() {
+		return (isInComingActivityStarted() && mInComingActivity.isForegroundActivity());
+	}
+	
+	private boolean isInComingActivityStarted() {
+		return (mInComingActivity != null &&
+                !mInComingActivity.isDestroyed() &&
+                !mInComingActivity.isFinishing());
+	}
+	
+	private CallActivity mCallActivity;
+	public void setCallActivity(CallActivity activity){
+		mCallActivity = activity;
+	}
+	
+	private boolean isShowingCallUi() {
+		return (isCallActivityStarted() && mCallActivity.isForegroundActivity());
+	}
+	
+	private boolean isCallActivityStarted() {
+		return (mCallActivity != null &&
+                !mCallActivity.isDestroyed() &&
+                !mCallActivity.isFinishing());
 	}
 
 //local interface @{	

@@ -92,6 +92,19 @@ public class InComingActivity extends Activity implements OnClickListener {
 			mRinger.ring();
 		}
 	}
+	
+	@Override
+    protected void onResume() {
+		super.onResume();
+		mIsForegroundActivity = true;
+	}
+	
+	@Override
+    protected void onPause() {
+		super.onPause();
+
+        mIsForegroundActivity = false;
+	}
 
 	@Override
 	public void onDestroy() {
@@ -144,4 +157,9 @@ public class InComingActivity extends Activity implements OnClickListener {
 		startActivity(intent);
 		finish();
 	}
+	
+	private boolean mIsForegroundActivity;
+    public boolean isForegroundActivity() {
+    	return mIsForegroundActivity;
+    }
 }

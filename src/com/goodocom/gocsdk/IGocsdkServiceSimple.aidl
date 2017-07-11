@@ -14,4 +14,5 @@ interface IGocsdkServiceSimple {
 	boolean isInCall();
 	void endCall();
 	void acceptCall();
+	void showCallActivity(boolean showDialpad);
 }

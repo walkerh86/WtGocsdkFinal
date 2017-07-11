@@ -457,6 +457,13 @@ public class CommandParser extends GocsdkCommon {
 				Log.i("hcj.serial", "IND_HFP_STATUS status="+GocsdkCallbackImp.hfpStatus);
 				mServiceHandler.sendMessage(mServiceHandler.obtainMessage(GocsdkService.MSG_IND_HFP_STATUS,GocsdkCallbackImp.hfpStatus,0));
 			}
+		}else if (cmd.startsWith(Commands.IND_AV_STATUS)) {
+			if (cmd.length() < 4) {
+			} else {
+				int status = Integer.parseInt(cmd.substring(3, 4));
+				GocsdkCallbackImp.hfpStatus = (status & 0x02) != 0 ? 1 : 0;
+				mServiceHandler.sendMessage(mServiceHandler.obtainMessage(GocsdkService.MSG_IND_HFP_STATUS,GocsdkCallbackImp.hfpStatus,0));
+			}
 		}
 		/*else if (cmd.startsWith(Commands.IND_OUTGOING_TALKING_NUMBER)) {
 

@@ -159,6 +159,19 @@ public class CallActivity extends Activity implements OnClickListener,View.OnTou
 		isConnect();
 		hand = handler;
 	}
+	
+	@Override
+    protected void onResume() {
+		super.onResume();
+		mIsForegroundActivity = true;
+	}
+	
+	@Override
+    protected void onPause() {
+		super.onPause();
+
+        mIsForegroundActivity = false;
+	}
 
 	@Override
 	public void onDestroy() {
@@ -513,5 +526,10 @@ public class CallActivity extends Activity implements OnClickListener,View.OnTou
 	            // though.)
 	            mDtmfDialerField.getText().append(digit);
 	        }
+	    }
+	    
+	    private boolean mIsForegroundActivity;
+	    public boolean isForegroundActivity() {
+	    	return mIsForegroundActivity;
 	    }
 }
