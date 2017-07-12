@@ -2,6 +2,7 @@ package com.goodocom.gocsdkfinal.fragment;
 
 import com.goodocom.gocsdkfinal.GocsdkSettings;
 import com.goodocom.gocsdkfinal.R;
+import com.goodocom.gocsdkfinal.service.GocsdkServiceHelper;
 import com.goodocom.gocsdkfinal.view.WtEditTextPreference;
 
 import android.os.Bundle;
@@ -29,6 +30,8 @@ public class WtFragmentSetting extends PreferenceFragment{
 	private static final String KEY_DEV_NAME = "key_bt_name";
 	private static final String KEY_PIN_CODE = "key_bt_pin";
 	
+	private GocsdkServiceHelper mGocsdkServiceHelper;
+	
 	@Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -51,9 +54,11 @@ public class WtFragmentSetting extends PreferenceFragment{
         
         mNamePreference = (WtEditTextPreference) findPreference(KEY_DEV_NAME);
         mNamePreference.setOnPreferenceChangeListener(mPreferenceChangeListener);
-                
+        mNamePreference.setDispText(mSettings.getLocalName());
+		
         mPinPreference = (WtEditTextPreference) findPreference(KEY_PIN_CODE);
-        mPinPreference.setOnPreferenceChangeListener(mPreferenceChangeListener);        
+        mPinPreference.setOnPreferenceChangeListener(mPreferenceChangeListener);  
+        mPinPreference.setDispText(mSettings.getLocalPin());
 	}
 	
 	@Override
@@ -62,10 +67,11 @@ public class WtFragmentSetting extends PreferenceFragment{
 		if(listView != null){
 			listView.setPaddingRelative(4,0,4,0);
 		}
-		
-		mNamePreference.setDispText(mSettings.getLocalName());
-		mPinPreference.setDispText(mSettings.getLocalPin());
     }
+	
+	public void setGocsdkServiceHelper(GocsdkServiceHelper helper){
+		mGocsdkServiceHelper = helper;
+	}
 		
 	private OnPreferenceChangeListener mPreferenceChangeListener = new OnPreferenceChangeListener(){
 		@Override
@@ -73,22 +79,48 @@ public class WtFragmentSetting extends PreferenceFragment{
 			final String key = preference.getKey();
 			Log.i(TAG, "key="+key);
 			if (KEY_BT_SWITCH.equals(key)) {
-				mSettings.setOpen((Boolean)objValue);
+				boolean isOpen = (Boolean)objValue;
+				mSettings.setOpen(isOpen);
+				if(mGocsdkServiceHelper != null){
+					mGocsdkServiceHelper.setBtSwitch(isOpen);
+				}
 			}else if (KEY_AUTO_CONNECT.equals(key)) {
-				mSettings.setAutoConnect((Boolean)objValue);
+				boolean isAutoConnect = (Boolean)objValue;
+				mSettings.setAutoConnect(isAutoConnect);
+				if(mGocsdkServiceHelper != null){
+					if(isAutoConnect){
+						mGocsdkServiceHelper.setAutoConnect();
+					}else{
+						mGocsdkServiceHelper.cancelAutoConnect();
+					}
+				}
 			}else if (KEY_AUTO_ANSWER.equals(key)) {
-				mSettings.setAutoAnswer((Boolean)objValue);
+				boolean isAutoAnswer = (Boolean)objValue;
+				mSettings.setAutoAnswer(isAutoAnswer);
+				if(mGocsdkServiceHelper != null){
+					if(isAutoAnswer){
+						mGocsdkServiceHelper.setAutoAnswer();
+					}else{
+						mGocsdkServiceHelper.cancelAutoAnswer();
+					}
+				}
 			}else if (KEY_DEV_NAME.equals(key)) {
 				if(objValue != null){
 					String name = (String)objValue;
 					mSettings.setLocalName(name);
 					mNamePreference.setDispText(name);
+					if(mGocsdkServiceHelper != null){
+						mGocsdkServiceHelper.setLocalName(name);;
+					}
 				}
 			}else if (KEY_PIN_CODE.equals(key)) {
 				if(objValue != null){
 					String code = (String)objValue;
 					mSettings.setLocalPin(code);
 					mPinPreference.setDispText(code);
+					if(mGocsdkServiceHelper != null){
+						mGocsdkServiceHelper.setPinCode(code);
+					}
 				}
 			}
 			return true;

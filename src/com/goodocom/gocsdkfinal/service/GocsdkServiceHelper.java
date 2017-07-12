@@ -197,8 +197,12 @@ public class GocsdkServiceHelper {
 	}
 
 	
-	public void setPinCode(String pincode) throws RemoteException {
-		mGocsdkService.sendCommand(Commands.MODIFY_PIN_CODE+pincode);
+	public void setPinCode(String pincode){
+		try{
+			mGocsdkService.sendCommand(Commands.MODIFY_PIN_CODE+pincode);
+		}catch(Exception e){
+			
+		}
 	}
 	
 	
@@ -212,23 +216,39 @@ public class GocsdkServiceHelper {
 	}
 	
 	
-	public void setAutoConnect() throws RemoteException{
-		mGocsdkService.sendCommand(Commands.SET_AUTO_CONNECT_ON_POWER);
+	public void setAutoConnect(){
+		try{
+			mGocsdkService.sendCommand(Commands.SET_AUTO_CONNECT_ON_POWER);
+		}catch(Exception e){
+			
+		}		
 	}
 	
 	 
-	public void cancelAutoConnect() throws RemoteException{
-		mGocsdkService.sendCommand(Commands.UNSET_AUTO_CONNECT_ON_POWER);
+	public void cancelAutoConnect(){		
+		try{
+			mGocsdkService.sendCommand(Commands.UNSET_AUTO_CONNECT_ON_POWER);
+		}catch(Exception e){
+			
+		}
 	}
 	
 	 
-	public void setAutoAnswer() throws RemoteException{
-		mGocsdkService.sendCommand(Commands.SET_AUTO_ANSWER);
+	public void setAutoAnswer(){		
+		try{
+			mGocsdkService.sendCommand(Commands.SET_AUTO_ANSWER);
+		}catch(Exception e){
+			
+		}
 	}
 	
 	
-	public void cancelAutoAnswer() throws RemoteException{
-		mGocsdkService.sendCommand(Commands.UNSET_AUTO_ANSWER);
+	public void cancelAutoAnswer(){		
+		try{
+			mGocsdkService.sendCommand(Commands.UNSET_AUTO_ANSWER);
+		}catch(Exception e){
+			
+		}
 	}
 	
 	
