@@ -1,11 +1,15 @@
 package com.goodocom.gocsdkfinal.activity;
 
 import com.goodocom.gocsdkfinal.R;
-import com.goodocom.gocsdkfinal.fragment.FragmentSetting;
+import com.goodocom.gocsdkfinal.fragment.WtFragmentSetting;
 
 import android.os.Bundle;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
+import android.view.View;
+import android.annotation.Nullable;
+//import android.support.v4.app.FragmentManager;
+//import android.support.v4.app.FragmentTransaction;
+import android.app.FragmentManager;
+import android.app.FragmentTransaction;
 
 public class SettingsActivity extends BaseActivity {
 	@Override
@@ -13,11 +17,11 @@ public class SettingsActivity extends BaseActivity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_settings);
 		
-		FragmentSetting mFragmentSettings = new FragmentSetting();
-		FragmentManager fragmentManager = this.getSupportFragmentManager();
-		FragmentTransaction ft = fragmentManager.beginTransaction();
+		WtFragmentSetting mFragmentSettings = new WtFragmentSetting();
+		FragmentTransaction ft = getFragmentManager().beginTransaction();
 		ft.add(R.id.root_view, mFragmentSettings, "settings");
 		ft.show(mFragmentSettings);
         ft.commit();
 	}
+	
 }

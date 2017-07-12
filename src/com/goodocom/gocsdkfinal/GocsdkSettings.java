@@ -48,4 +48,24 @@ public class GocsdkSettings {
 		editor.putBoolean("auto_answer", autoAnswer);
 		editor.commit();
 	}
+	
+	public String getLocalName(){
+		return mSettings.getString("local_name", "BLINK Q9");
+	}
+	
+	public void setLocalName(String name){
+		SharedPreferences.Editor editor = mSettings.edit();
+		editor.putString("local_name", name);
+		editor.commit();
+	}
+	
+	public String getLocalPin(){
+		return mSettings.getString("local_pin", "0000");
+	}
+	
+	public void setLocalPin(String code){
+		SharedPreferences.Editor editor = mSettings.edit();
+		editor.putString("local_pin", code);
+		editor.commit();
+	}
 }

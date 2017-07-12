@@ -353,7 +353,7 @@ public class GocsdkService extends Service {
 			write(mSettings.isAutoAnswer() ? Commands.SET_AUTO_ANSWER : Commands.UNSET_AUTO_ANSWER);
 			write(Commands.INQUIRY_HFP_STATUS);
 			write(Commands.MUSIC_UNMUTE);
-			write(Commands.MODIFY_LOCAL_NAME);
+			write(Commands.MODIFY_LOCAL_NAME+mSettings.getLocalName());
 			write(Commands.MODIFY_PIN_CODE);
 		//}
 	}

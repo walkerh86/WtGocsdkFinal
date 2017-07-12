@@ -75,6 +75,7 @@
         </receiver>
         
         <activity android:name="com.goodocom.gocsdkfinal.activity.SettingsActivity"
+            android:theme="@style/SettingsActivityTheme"
             android:exported="true">         
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

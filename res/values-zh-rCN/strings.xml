@@ -13,8 +13,8 @@
     <string name="unkown_number">未知号码</string>
     <string name="out_going">正在呼叫...</string>
     <string name="incoming">来电</string>
-    <string name="bt_auto_connect">蓝牙自动连接</string>
-    <string name="bt_auto_answer">蓝牙自动接听</string>
+    <string name="bt_auto_connect">自动连接</string>
+    <string name="bt_auto_answer">自动接听</string>
     <string name="device_name">设备名</string>
     <string name="pin_code">PIN码</string>
     <string name="bt_switch">蓝牙开关</string>
