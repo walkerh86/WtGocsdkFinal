@@ -64,7 +64,7 @@ public class WtFragmentAvailBtList extends Fragment{
 				loadData();
 			}
 		});
-		showAvail();
+		showNormal();
 		loadData();
 		
 		return view;
@@ -108,14 +108,14 @@ public class WtFragmentAvailBtList extends Fragment{
 			@Override
 			public void onDiscoveryDone() {
 				mSearching = false;
-				showAvail();
+				showNormal();
 			}
 		});
 		
 		//loadData();
 	}
 	
-	private void showAvail(){
+	private void showNormal(){
 		mStateView.setText(R.string.avail_device);
 		//mStateView.setVisibility(View.VISIBLE);
 		mSearchBtn.setVisibility(View.VISIBLE);

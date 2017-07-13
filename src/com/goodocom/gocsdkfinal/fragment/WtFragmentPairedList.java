@@ -32,6 +32,9 @@ public class WtFragmentPairedList extends Fragment{
 	private List<BlueToothPairedInfo> mPairedInfoList = new ArrayList<BlueToothPairedInfo>();
 	private String mAddress;
 	//private boolean mConnecting = false;
+	private TextView mStateView;
+	private TextView mSearchBtn;
+	private View mSearchProgress;
 	
 	@Override
     public void onCreate(Bundle savedInstanceState) {
@@ -60,8 +63,19 @@ public class WtFragmentPairedList extends Fragment{
 			}
 		});
 		
-		TextView stateView = (TextView)view.findViewById(R.id.state);
-		stateView.setText(this.getString(R.string.paired_device));
+		mSearchProgress = view.findViewById(R.id.scanning_progress);
+		
+		mStateView = (TextView)view.findViewById(R.id.state);
+		mSearchBtn = (TextView)view.findViewById(R.id.search);
+		mSearchBtn.setOnClickListener(new View.OnClickListener() {			
+			@Override
+			public void onClick(View arg0) {
+				loadData();
+			}
+		});
+		showNormal();
+		
+		loadData();
 		
 		return view;
 	}
@@ -84,9 +98,18 @@ public class WtFragmentPairedList extends Fragment{
 			public void onPairedDeviceAdd(BlueToothPairedInfo info) {
 				Log.i("hcj.cb", "onPairedDeviceAdd");
 				if(info.index>0){
-					mPairedInfoList.add(info);
-				}
-				mDeviceAdapter.notifyDataSetChanged();
+					boolean added = false;
+					for(int i=0;i<mPairedInfoList.size();i++){
+						BlueToothPairedInfo pairedInfo = mPairedInfoList.get(i);
+						if(pairedInfo.address.equals(info.address)){
+							added = true;
+						}
+					}
+					if(!added){
+						mPairedInfoList.add(info);
+						mDeviceAdapter.notifyDataSetChanged();
+					}
+				}				
 			}
 			
 			@Override
@@ -106,7 +129,21 @@ public class WtFragmentPairedList extends Fragment{
 			}
 		});
 		
-		loadData();
+		//loadData();
+	}
+	
+	private void showNormal(){
+		mStateView.setText(R.string.paired_device);
+		//mStateView.setVisibility(View.VISIBLE);
+		mSearchBtn.setVisibility(View.GONE);
+		mSearchProgress.setVisibility(View.GONE);
+	}
+	
+	private void showSearching(){
+		mStateView.setText(R.string.state_searching);
+		//mStateView.setVisibility(View.VISIBLE);
+		mSearchBtn.setVisibility(View.GONE);
+		mSearchProgress.setVisibility(View.VISIBLE);
 	}
 	
 	private void loadData(){
@@ -115,6 +152,7 @@ public class WtFragmentPairedList extends Fragment{
 		
 		mGocsdkServiceHelper.getPairList();
 		mGocsdkServiceHelper.getCurrentDeviceAddr();
+		//showSearching();
 	}
 	
 	private class DeviceAdapter extends BaseAdapter {

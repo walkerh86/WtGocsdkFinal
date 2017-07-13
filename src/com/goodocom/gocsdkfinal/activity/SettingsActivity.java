@@ -49,9 +49,7 @@ public class SettingsActivity extends BaseActivity {
 				mGocsdkServiceHelper.registerCallback(mCallBack);				
 			}
 		});
-		mGocsdkServiceHelper.bindService(this);
-		
-		
+		mGocsdkServiceHelper.bindService(this);	
 		
 		setContentView(R.layout.activity_settings);
 		

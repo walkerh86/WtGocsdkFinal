@@ -17,13 +17,13 @@
 <PreferenceScreen
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:title="@string/app_name" >  
-    
+    <!-- 
     <SwitchPreference
         android:key="key_bt_switch"
         android:title="@string/bt_switch"
         android:persistent="false"
         />
-    
+     -->
     <SwitchPreference
         android:key="key_auto_connect"
         android:title="@string/bt_auto_connect"

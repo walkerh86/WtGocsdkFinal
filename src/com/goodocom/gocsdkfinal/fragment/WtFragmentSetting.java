@@ -11,18 +11,23 @@ import android.preference.Preference.OnPreferenceChangeListener;
 import android.util.Log;
 import android.preference.PreferenceFragment;
 import android.preference.SwitchPreference;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.CompoundButton;
 import android.widget.ListView;
+import android.widget.Switch;
 
 public class WtFragmentSetting extends PreferenceFragment{
 	private static final String TAG = "hcj.WtFragmentSetting";
 	
 	private GocsdkSettings mSettings;
-	private SwitchPreference mBtSwitchPreference;
+	//private SwitchPreference mBtSwitchPreference;
 	private SwitchPreference mAutoConnectPreference;
 	private SwitchPreference mAutoAnswerPreference;
 	private WtEditTextPreference mNamePreference;
 	private WtEditTextPreference mPinPreference;
+	private Switch mBtSwitch;
 	
 	private static final String KEY_BT_SWITCH = "key_bt_switch";
 	private static final String KEY_AUTO_CONNECT = "key_auto_connect";
@@ -40,9 +45,9 @@ public class WtFragmentSetting extends PreferenceFragment{
         
         addPreferencesFromResource(R.xml.bt_settings);
         
-        mBtSwitchPreference = (SwitchPreference) findPreference(KEY_BT_SWITCH);
-        mBtSwitchPreference.setOnPreferenceChangeListener(mPreferenceChangeListener);
-        mBtSwitchPreference.setChecked(mSettings.isOpen());
+        //mBtSwitchPreference = (SwitchPreference) findPreference(KEY_BT_SWITCH);
+        //mBtSwitchPreference.setOnPreferenceChangeListener(mPreferenceChangeListener);
+        //mBtSwitchPreference.setChecked(mSettings.isOpen());
         
         mAutoConnectPreference = (SwitchPreference) findPreference(KEY_AUTO_CONNECT);
         mAutoConnectPreference.setOnPreferenceChangeListener(mPreferenceChangeListener);
@@ -59,6 +64,25 @@ public class WtFragmentSetting extends PreferenceFragment{
         mPinPreference = (WtEditTextPreference) findPreference(KEY_PIN_CODE);
         mPinPreference.setOnPreferenceChangeListener(mPreferenceChangeListener);  
         mPinPreference.setDispText(mSettings.getLocalPin());
+	}
+	
+	@Override
+	public View onCreateView(LayoutInflater inflater, ViewGroup container,
+			Bundle savedInstanceState) {
+		View view = View.inflate(getActivity(), R.layout.wt_preference_list_fragment, null);
+		mBtSwitch = (Switch)view.findViewById(R.id.bt_switch);
+		mBtSwitch.setChecked(mSettings.isOpen());
+		mBtSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {			
+			@Override
+			public void onCheckedChanged(CompoundButton arg0, boolean arg1) {
+				boolean isOpen = (Boolean)arg1;
+				mSettings.setOpen(isOpen);
+				if(mGocsdkServiceHelper != null){
+					mGocsdkServiceHelper.setBtSwitch(isOpen);
+				}
+			}
+		});
+		return view;
 	}
 	
 	@Override

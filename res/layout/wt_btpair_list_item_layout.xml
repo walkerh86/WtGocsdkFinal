@@ -41,10 +41,5 @@
         android:padding="16dp"
         android:layout_marginRight="8dp"
         android:src="@drawable/btn_delete_selector"/>
-    <View 
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:layout_alignParentBottom="true"
-        android:background="#fff"/>
 
 </RelativeLayout>
