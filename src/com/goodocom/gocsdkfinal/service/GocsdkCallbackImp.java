@@ -6,6 +6,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.os.RemoteException;
 import android.support.v4.app.FragmentTabHost;
+import android.util.Log;
 
 import com.goodocom.gocsdk.IGocsdkCallback;
 import com.goodocom.gocsdkfinal.activity.CallActivity;
@@ -41,6 +42,13 @@ public class GocsdkCallbackImp extends IGocsdkCallback.Stub {
 
 	@Override
 	public void onHfpConnected() throws RemoteException {
+		Log.i("hcj.cb", "onHfpConnected mOnPairedListener="+mOnPairedListener);
+		if(mOnPairedListener != null){
+			mOnPairedListener.onHfpStateChange(true);
+		}
+		if(mOnAvailListener != null){
+			mOnAvailListener.onHfpStateChange(true);
+		}
 		Handler handler2 = FragmentBlueToothList.getHandler();
 		if(handler2!=null){
 			handler2.sendEmptyMessage(FragmentBlueToothList.MSG_CONNECT_SUCCESS);
@@ -54,6 +62,12 @@ public class GocsdkCallbackImp extends IGocsdkCallback.Stub {
 
 	@Override
 	public void onHfpDisconnected() throws RemoteException {
+		if(mOnPairedListener != null){
+			mOnPairedListener.onHfpStateChange(false);
+		}
+		if(mOnAvailListener != null){
+			mOnAvailListener.onHfpStateChange(false);
+		}
 		Handler handler2 = FragmentBlueToothList.getHandler();
 		if(handler2!=null){
 			handler2.sendEmptyMessage(FragmentBlueToothList.MSG_CONNECT_FAILE);
@@ -97,7 +111,7 @@ public class GocsdkCallbackImp extends IGocsdkCallback.Stub {
 
 	@Override
 	public void onTalking(String str) throws RemoteException {
-		System.out.println("接通了");
+		System.out.println("鎺ラ�氫簡");
 		Handler handler = MainActivity.getHandler();
 		if(handler==null){
 			return;
@@ -177,6 +191,9 @@ public class GocsdkCallbackImp extends IGocsdkCallback.Stub {
 
 	@Override
 	public void onCurrentAddr(String addr) throws RemoteException {
+		if(mOnPairedListener != null){
+			mOnPairedListener.onCurrentAddr(addr);
+		}
 		Handler handler2 = FragmentBlueToothList.getHandler();
 		if(handler2!=null){
 			Message msg = new Message();
@@ -198,9 +215,9 @@ public class GocsdkCallbackImp extends IGocsdkCallback.Stub {
 	public void onCurrentName(String name) throws RemoteException {
 	}
 
-	// 1:未连接 3:已连接 4：电话拨出 5：电话打入 6：通话中
+	// 1:鏈繛鎺� 3:宸茶繛鎺� 4锛氱數璇濇嫧鍑� 5锛氱數璇濇墦鍏� 6锛氶�氳瘽涓�
 	/*
-	 * 0~初始化 1~待机状态 2~连接中 3~连接成功 4~电话拨出 5~电话打入 6~通话中
+	 * 0~鍒濆鍖� 1~寰呮満鐘舵�� 2~杩炴帴涓� 3~杩炴帴鎴愬姛 4~鐢佃瘽鎷ㄥ嚭 5~鐢佃瘽鎵撳叆 6~閫氳瘽涓�
 	 */
 	@Override
 	public void onHfpStatus(int status) throws RemoteException {
@@ -231,10 +248,18 @@ public class GocsdkCallbackImp extends IGocsdkCallback.Stub {
 
 	@Override
 	public void onAvStatus(int status) throws RemoteException {
+		boolean connected = ((status & 0x02) != 0);
+		GocsdkCallbackImp.hfpStatus = connected ? 1 : 0;
+		if(mOnPairedListener != null){
+			mOnPairedListener.onHfpStateChange(connected);
+		}
+		if(mOnAvailListener != null){
+			mOnAvailListener.onHfpStateChange(connected);
+		}
 	}
 
 	@Override
-	public void onVersionDate(String version) throws RemoteException {
+	public void onVersionDate(String version) throws RemoteException {		
 	}
 
 	@Override
@@ -264,18 +289,23 @@ public class GocsdkCallbackImp extends IGocsdkCallback.Stub {
 	@Override
 	public void onA2dpConnected() throws RemoteException {
 	}
-	//配对列表
+	//閰嶅鍒楄〃
 	@Override
 	public void onCurrentAndPairList(int index, String name, String addr)
 			throws RemoteException {
-		Handler handler = FragmentBlueToothList.getHandler();
-		if(handler == null){
-			return;
-		}
 		BlueToothPairedInfo info = new BlueToothPairedInfo();
 		info.index = index;
 		info.name = name;
 		info.address = addr;
+		//Log.i("hcj.cb", "onCurrentAndPairList mOnPairedListener="+mOnPairedListener);
+		if(mOnPairedListener != null){
+			mOnPairedListener.onPairedDeviceAdd(info);
+		}
+		
+		Handler handler = FragmentBlueToothList.getHandler();
+		if(handler == null){
+			return;
+		}		
 		Message msg = new Message();
 		msg.obj = info;
 		msg.what = FragmentBlueToothList.MSG_PAIRED_DEVICE;
@@ -360,13 +390,17 @@ public class GocsdkCallbackImp extends IGocsdkCallback.Stub {
 	}
 
 	@Override
-	public void onDiscovery(String name, String addr) throws RemoteException {
-		Handler handler = FragmentBlueToothInfo.getHandler();
-		Message msg = new Message();
-		msg.what = FragmentBlueToothInfo.MSG_SEARCHE_DEVICE;
+	public void onDiscovery(String name, String addr) throws RemoteException {		
 		BlueToothInfo info = new BlueToothInfo();
 		info.name = name;
 		info.address = addr;
+		if(mOnAvailListener != null){
+			mOnAvailListener.onDiscovery(info);
+		}
+		
+		Handler handler = FragmentBlueToothInfo.getHandler();
+		Message msg = new Message();
+		msg.what = FragmentBlueToothInfo.MSG_SEARCHE_DEVICE;
 		msg.obj = info;
 		if (handler == null) {
 			return;
@@ -376,6 +410,10 @@ public class GocsdkCallbackImp extends IGocsdkCallback.Stub {
 
 	@Override
 	public void onDiscoveryDone() throws RemoteException {
+		if(mOnAvailListener != null){
+			mOnAvailListener.onDiscoveryDone();
+		}
+		
 		Handler handler = FragmentBlueToothInfo.getHandler();
 		if (handler == null) {
 			return;
@@ -387,7 +425,7 @@ public class GocsdkCallbackImp extends IGocsdkCallback.Stub {
 	public void onLocalAddress(String addr) throws RemoteException {
 	}
 
-	//得到拨出或者通话中的号码
+	//寰楀埌鎷ㄥ嚭鎴栬�呴�氳瘽涓殑鍙风爜
 	@Override
 	public void onOutGoingOrTalkingNumber(String number) throws RemoteException {
 
@@ -497,4 +535,26 @@ public class GocsdkCallbackImp extends IGocsdkCallback.Stub {
 		mainHandler.sendEmptyMessage(MainActivity.MSG_PHONEBOOK_NOT_SHARE);
 	}
 
+	
+	public interface OnPairedListener{
+		void onHfpStateChange(boolean connected);
+		void onPairedDeviceAdd(BlueToothPairedInfo info);
+		void onCurrentAddr(String addr);
+	}
+	
+	private OnPairedListener mOnPairedListener;
+	public void setOnPairedListener(OnPairedListener listener){
+		mOnPairedListener = listener;
+	}
+	
+	public interface OnAvailListener{
+		void onHfpStateChange(boolean connected);
+		void onDiscovery(BlueToothInfo info);
+		void onDiscoveryDone();
+	}
+	
+	private OnAvailListener mOnAvailListener;
+	public void setOnAvailListener(OnAvailListener listener){
+		mOnAvailListener = listener;
+	}
 }

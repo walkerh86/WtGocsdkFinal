@@ -179,12 +179,12 @@ public class FragmentBlueToothInfo extends Fragment implements OnClickListener {
 				
 				showPopupWindow();
 				BlueToothInfo blueToothInfo = adapter.getItem(position);
-				try {
+				//try {
 					MainActivity.getService().connectDevice(
 							blueToothInfo.address);
-				} catch (RemoteException e) {
-					e.printStackTrace();
-				}
+				//} catch (RemoteException e) {
+					//e.printStackTrace();
+				//}
 			}
 		});
 	}
@@ -201,7 +201,7 @@ public class FragmentBlueToothInfo extends Fragment implements OnClickListener {
 
 	protected void showPopupWindow() {
 		dialog = new TransparentDialog(activity,R.style.transparentdialog);
-		dialog.setCanceledOnTouchOutside(false);//点击不消失
+		dialog.setCanceledOnTouchOutside(false);//鐐瑰嚮涓嶆秷澶�
 		dialog.show();
 	}
 
@@ -212,11 +212,11 @@ public class FragmentBlueToothInfo extends Fragment implements OnClickListener {
 			if(isSearch){
 				iv_anim.setVisibility(View.GONE);
 				iv_anim.clearAnimation();
-				try {
+				//try {
 					MainActivity.getService().stopDiscovery();
-				} catch (RemoteException e) {
-					e.printStackTrace();
-				}
+				//} catch (RemoteException e) {
+					//e.printStackTrace();
+				//}
 			}else{
 				iv_anim.setVisibility(View.VISIBLE);
 				RotateAnimation ra = new RotateAnimation(0.0f, 359.0f,
@@ -231,11 +231,11 @@ public class FragmentBlueToothInfo extends Fragment implements OnClickListener {
 
 				bts.clear();
 				adapter.notifyDataSetChanged();
-				try {
+				//try {
 					MainActivity.getService().startDiscovery();
-				} catch (RemoteException e) {
-					e.printStackTrace();
-				}
+				//} catch (RemoteException e) {
+					//e.printStackTrace();
+				//}
 			}
 			break;
 		}
@@ -275,7 +275,7 @@ public class FragmentBlueToothInfo extends Fragment implements OnClickListener {
 			BlueToothInfo blueToothInfo = bts.get(position);
 			String name = null;
 			if (TextUtils.isEmpty(blueToothInfo.name)) {
-				name = "该设备无名称";
+				name = "璇ヨ澶囨棤鍚嶇О";
 			} else {
 				name = blueToothInfo.name;
 			}

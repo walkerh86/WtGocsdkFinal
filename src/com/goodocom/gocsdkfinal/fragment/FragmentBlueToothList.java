@@ -97,19 +97,19 @@ public class FragmentBlueToothList extends Fragment {
 				isConnecting = !isConnecting;
 				if(isConnecting){
 					address = null;
-					try {
+					//try {
 						MainActivity.getService().disconnect();
-					} catch (RemoteException e) {
-						e.printStackTrace();
-					}
+					//} catch (RemoteException e) {
+						//e.printStackTrace();
+					//}
 				}else{
 					BlueToothPairedInfo blueToothPairedInfo = deviceAdapter.getItem(position);
 					address = blueToothPairedInfo.address;
-					try {
+					//try {
 						MainActivity.getService().connectDevice(blueToothPairedInfo.address);
-					} catch (RemoteException e) {
-						e.printStackTrace();
-					}
+					//} catch (RemoteException e) {
+						//e.printStackTrace();
+					//}
 				}
 			}
 		});
@@ -124,12 +124,12 @@ public class FragmentBlueToothList extends Fragment {
 			return;
 		}
 		deviceAdapter.notifyDataSetChanged();
-		try {
+		//try {
 			MainActivity.getService().getPairList();
 			MainActivity.getService().getCurrentDeviceAddr();
-		} catch (RemoteException e) {
-			e.printStackTrace();
-		}
+		//} catch (RemoteException e) {
+			//e.printStackTrace();
+		//}
 	}
 
 	private class DeviceAdapter extends BaseAdapter {

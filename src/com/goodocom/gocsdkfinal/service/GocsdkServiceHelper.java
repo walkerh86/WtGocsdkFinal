@@ -1,5 +1,7 @@
 package com.goodocom.gocsdkfinal.service;
 
+import java.util.ArrayList;
+
 import com.goodocom.gocsdk.IGocsdkCallback;
 import com.goodocom.gocsdk.IGocsdkService;
 import com.goodocom.gocsdk.IGocsdkServiceSimple;
@@ -18,6 +20,7 @@ public class GocsdkServiceHelper {
 	private IGocsdkServiceSimple mGocsdkService;
 	private GocsdkService mLocalService;
 	private GocsdkConnection mConnection;
+	private ArrayList<OnServiceConnectListener> mListeners;
 	
 	private class GocsdkConnection implements ServiceConnection {
 
@@ -26,8 +29,13 @@ public class GocsdkServiceHelper {
 			mGocsdkService = IGocsdkServiceSimple.Stub.asInterface(service);
 			mLocalService = GocsdkService.getInstance();
 			Log.i("hcj.GocsdkExtService", "onServiceConnected mGocsdkService="+mGocsdkService);
+			/*
 			if(mOnServiceConnectListener != null){
 				mOnServiceConnectListener.onServiceConnected(mGocsdkService);
+			}*/
+			for(int i=0;i<mListeners.size();i++){
+				OnServiceConnectListener listener = mListeners.get(i);
+				listener.onServiceConnected(mGocsdkService);
 			}
 		}
 
@@ -36,14 +44,29 @@ public class GocsdkServiceHelper {
 			mGocsdkService = null;
 			mLocalService = null;
 			Log.i("hcj.GocsdkExtService", "onServiceDisconnected mGocsdkService="+mGocsdkService);
+			/*
 			if(mOnServiceConnectListener != null){
 				mOnServiceConnectListener.onServiceDisconnected();
+			}*/
+			for(int i=0;i<mListeners.size();i++){
+				OnServiceConnectListener listener = mListeners.get(i);
+				listener.onServiceDisconnected();
 			}
 		}
 	}
 	
 	public GocsdkServiceHelper(OnServiceConnectListener listener){
-		mOnServiceConnectListener = listener;
+		mListeners = new ArrayList<OnServiceConnectListener>();
+		mListeners.add(listener);
+		//mOnServiceConnectListener = listener;
+	}
+	
+	public void registerListener(OnServiceConnectListener listener){
+		mListeners.add(listener);
+	}
+	
+	public void unregisterListener(OnServiceConnectListener listener){
+		mListeners.remove(listener);
 	}
 	
 	public void bindService(Context context){
@@ -293,8 +316,12 @@ public class GocsdkServiceHelper {
 	}
 
 	
-	public void disconnect() throws RemoteException {
-		mGocsdkService.sendCommand(Commands.DISCONNECT_DEVICE);
+	public void disconnect(){
+		try{
+			mGocsdkService.sendCommand(Commands.DISCONNECT_DEVICE);
+		}catch(Exception e){
+			
+		}
 	}
 
 	
@@ -324,18 +351,30 @@ public class GocsdkServiceHelper {
 	}
 
 	
-	public void startDiscovery() throws RemoteException {
-		mGocsdkService.sendCommand(Commands.START_DISCOVERY);
+	public void startDiscovery(){
+		try{
+			mGocsdkService.sendCommand(Commands.START_DISCOVERY);
+		}catch(Exception e){
+			
+		}
 	}
 
 	
-	public void getPairList() throws RemoteException {
-		mGocsdkService.sendCommand(Commands.INQUIRY_PAIR_RECORD);
+	public void getPairList(){
+		try{
+			mGocsdkService.sendCommand(Commands.INQUIRY_PAIR_RECORD);
+		}catch(Exception e){
+			
+		}
 	}
 
 	
-	public void stopDiscovery() throws RemoteException {
-		mGocsdkService.sendCommand(Commands.STOP_DISCOVERY);
+	public void stopDiscovery(){
+		try{
+			mGocsdkService.sendCommand(Commands.STOP_DISCOVERY);
+		}catch(Exception e){
+			
+		}
 	}
 
 //hfp	
@@ -532,8 +571,12 @@ public class GocsdkServiceHelper {
 		}
 	}
 	
-	public void connectDevice(String addr) throws RemoteException {
-		mGocsdkService.sendCommand(Commands.CONNECT_DEVICE + addr);
+	public void connectDevice(String addr){
+		try{
+			mGocsdkService.sendCommand(Commands.CONNECT_DEVICE + addr);
+		}catch(Exception e){
+			
+		}
 	}
 	
 	public void setProfileEnabled(boolean[] enabled) throws RemoteException {

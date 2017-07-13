@@ -23,4 +23,10 @@
     <string name="accept_bt_call">接听蓝牙来电</string>
     <string name="reject_local_call">拒接蓝牙来电</string>
     <string name ="show_call_title">蓝牙联系人来电</string>
+    <string name="state_connected">已连接</string>
+    <string name="state_connecting">正在连接</string>
+    <string name="state_searching">正在搜索</string>
+    <string name="search">搜索</string>
+    <string name="avail_device">可用设备</string>
+    <string name="paired_device">已配对设备</string>
 </resources>
