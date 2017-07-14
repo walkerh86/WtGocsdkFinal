@@ -29,4 +29,11 @@
     <string name="search">搜索</string>
     <string name="avail_device">可用设备</string>
     <string name="paired_device">已配对设备</string>
+    <string name="state_loading">正在加载</string>
+    <string name="phonebook">通讯录</string>
+    <string name="calllog">通话记录</string>
+    <string name="calllog_in">已接电话</string>
+    <string name="calllog_out">已拨电话</string>
+    <string name="calllog_miss">未接电话</string>
+    <string name="sync">同步</string>
 </resources>

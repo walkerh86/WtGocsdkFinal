@@ -57,21 +57,27 @@ public class GocsdkServiceHelper {
 	
 	public GocsdkServiceHelper(OnServiceConnectListener listener){
 		mListeners = new ArrayList<OnServiceConnectListener>();
-		mListeners.add(listener);
-		//mOnServiceConnectListener = listener;
+		if(listener != null){
+			mListeners.add(listener);
+		}
 	}
 	
 	public void registerListener(OnServiceConnectListener listener){
-		mListeners.add(listener);
+		if(listener != null){
+			mListeners.add(listener);
+		}
 	}
 	
 	public void unregisterListener(OnServiceConnectListener listener){
-		mListeners.remove(listener);
+		if(listener != null){
+			mListeners.remove(listener);
+		}
 	}
 	
 	public void bindService(Context context){
 		Intent intent = new Intent();
 		intent.setComponent(new ComponentName("com.goodocom.gocsdkfinal","com.goodocom.gocsdkfinal.service.GocsdkService"));
+		context.startService(intent);
 		if(mConnection == null){
 			mConnection = new GocsdkConnection();
 		}
@@ -395,8 +401,12 @@ public class GocsdkServiceHelper {
 		}
 	}
 	
-	public void phoneDail(String phonenum) throws RemoteException {
-		mGocsdkService.sendCommand(Commands.DIAL+phonenum);
+	public void phoneDail(String phonenum){
+		try{
+			mGocsdkService.sendCommand(Commands.DIAL+phonenum);
+		}catch(Exception e){
+			
+		}
 	}
 
 	
@@ -428,13 +438,17 @@ public class GocsdkServiceHelper {
 
 //CONTACTS
 	
-	public void phoneBookStartUpdate() throws RemoteException {
-		mGocsdkService.sendCommand(Commands.SET_PHONE_PHONE_BOOK);
+	public void phoneBookStartUpdate(){
+		try{
+			mGocsdkService.sendCommand(Commands.SET_PHONE_PHONE_BOOK);
+		}catch(Exception e){
+			
+		}
 	}
 
 	
-	public void callLogstartUpdate(int type) throws RemoteException {
-		System.out.println("鍘讳笅杞介�氳瘽璁板綍鍟�");
+	public void callLogstartUpdate(int type){
+		try{
 		switch (type) {
 		case 1:
 			mGocsdkService.sendCommand(Commands.SET_OUT_GOING_CALLLOG);
@@ -447,6 +461,9 @@ public class GocsdkServiceHelper {
 			break;
 		default:
 			break;
+		}
+		}catch(Exception e){
+			
 		}
 	}
 

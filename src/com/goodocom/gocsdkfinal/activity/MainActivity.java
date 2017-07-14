@@ -522,11 +522,11 @@ public class MainActivity extends BaseActivity {
 				// There is no number entered.
 				return;
 			}
-			try {
+			//try {
 				MainActivity.getService().phoneDail(mLastNumber);
-			} catch (RemoteException e) {
-				e.printStackTrace();
-			}
+			//} catch (RemoteException e) {
+				//e.printStackTrace();
+			//}
 		}
 	}
 	

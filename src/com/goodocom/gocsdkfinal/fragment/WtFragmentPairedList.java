@@ -28,6 +28,8 @@ import android.widget.AdapterView.OnItemClickListener;
 
 public class WtFragmentPairedList extends Fragment{
 	private GocsdkServiceHelper mGocsdkServiceHelper;
+	private GocsdkCallbackImp mCallback;
+	
 	private DeviceAdapter mDeviceAdapter;
 	private List<BlueToothPairedInfo> mPairedInfoList = new ArrayList<BlueToothPairedInfo>();
 	private String mAddress;
@@ -80,20 +82,16 @@ public class WtFragmentPairedList extends Fragment{
 		return view;
 	}
 	
-	public void setGocsdkServiceHelper(GocsdkServiceHelper helper, GocsdkCallbackImp callbcack){
+	@Override
+	public void onDestroy(){
+		super.onDestroy();
+		mCallback.setOnPairedListener(null);
+	}
+	
+	public void setGocsdkServiceHelper(GocsdkServiceHelper helper, GocsdkCallbackImp callback){
 		mGocsdkServiceHelper = helper;	
-		/*
-		mGocsdkServiceHelper.registerListener(new GocsdkServiceHelper.OnServiceConnectListener() {			
-			@Override
-			public void onServiceDisconnected() {
-			}
-			
-			@Override
-			public void onServiceConnected(IGocsdkServiceSimple service) {
-				loadData();
-			}
-		});*/
-		callbcack.setOnPairedListener(new GocsdkCallbackImp.OnPairedListener() {			
+		mCallback = callback;
+		mCallback.setOnPairedListener(new GocsdkCallbackImp.OnPairedListener() {			
 			@Override
 			public void onPairedDeviceAdd(BlueToothPairedInfo info) {
 				Log.i("hcj.cb", "onPairedDeviceAdd");

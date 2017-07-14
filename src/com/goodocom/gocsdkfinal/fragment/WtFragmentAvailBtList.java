@@ -26,6 +26,8 @@ import android.widget.AdapterView.OnItemClickListener;
 
 public class WtFragmentAvailBtList extends Fragment{
 	private GocsdkServiceHelper mGocsdkServiceHelper;
+	private GocsdkCallbackImp mCallback;
+	
 	private DeviceAdapter mDeviceAdapter;
 	private List<BlueToothInfo> mAvailInfoList = new ArrayList<BlueToothInfo>();
 	private boolean mSearching = false;
@@ -76,22 +78,13 @@ public class WtFragmentAvailBtList extends Fragment{
 		if(mSearching){
 			mGocsdkServiceHelper.stopDiscovery();
 		}
+		mCallback.setOnAvailListener(null);
 	}
 	
 	public void setGocsdkServiceHelper(GocsdkServiceHelper helper, GocsdkCallbackImp callbcack){
 		mGocsdkServiceHelper = helper;	
-		/*
-		mGocsdkServiceHelper.registerListener(new GocsdkServiceHelper.OnServiceConnectListener() {			
-			@Override
-			public void onServiceDisconnected() {
-			}
-			
-			@Override
-			public void onServiceConnected(IGocsdkServiceSimple service) {
-				loadData();
-			}
-		});*/
-		callbcack.setOnAvailListener(new GocsdkCallbackImp.OnAvailListener() {	
+		mCallback = callbcack;
+		mCallback.setOnAvailListener(new GocsdkCallbackImp.OnAvailListener() {	
 			@Override
 			public void onHfpStateChange(boolean connected) {
 				Log.i("hcj.cb", "onHfpStateChange connected="+connected);

@@ -246,11 +246,11 @@ public class FragmentCallog extends Fragment implements OnClickListener {
 							.sendEmptyMessage(MainActivity.MSG_UPDATE_MISSED_CALLLOG);
 				}
 				call_log_miss.clear();
-				try {
+				//try {
 					MainActivity.getService().callLogstartUpdate(CALLLOG_MISS);
-				} catch (RemoteException e) {
-					e.printStackTrace();
-				}
+				//} catch (RemoteException e) {
+					//e.printStackTrace();
+				//}
 			}
 		} else {/*
 				 * if (systemDb != null) { List<CallLogInfo> InCallLog =
@@ -278,11 +278,11 @@ public class FragmentCallog extends Fragment implements OnClickListener {
 							.sendEmptyMessage(MainActivity.MSG_UPDATE_CALLOUT_CALLLOG);
 				}
 				call_log_out.clear();
-				try {
+				//try {
 					MainActivity.getService().callLogstartUpdate(CALLLOG_OUT);
-				} catch (RemoteException e) {
-					e.printStackTrace();
-				}
+				//} catch (RemoteException e) {
+					//e.printStackTrace();
+				//}
 			}
 		} else {
 			
@@ -302,11 +302,11 @@ public class FragmentCallog extends Fragment implements OnClickListener {
 				mainHandler
 						.sendEmptyMessage(MainActivity.MSG_UPDATE_INCOMING_CALLLOG);
 				call_log_in.clear();
-				try {
+				//try {
 					MainActivity.getService().callLogstartUpdate(CALLLOG_IN);
-				} catch (RemoteException e) {
-					e.printStackTrace();
-				}
+				//} catch (RemoteException e) {
+					//e.printStackTrace();
+				//}
 			}
 		} else {
 
@@ -440,11 +440,11 @@ public class FragmentCallog extends Fragment implements OnClickListener {
 				// There is no number entered.
 				return;
 			}
-			try {
+			//try {
 				MainActivity.getService().phoneDail(mLastNumber);
-			} catch (RemoteException e) {
-				e.printStackTrace();
-			}
+			//} catch (RemoteException e) {
+				//e.printStackTrace();
+			//}
 		}
 	}
 	

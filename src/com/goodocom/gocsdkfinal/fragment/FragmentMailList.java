@@ -221,7 +221,7 @@ public class FragmentMailList extends Fragment {
 	}
 
 	private void reflashContactsData() {
-		try {
+		//try {
 			Handler mainActivityHandler = MainActivity.getHandler();
 			if (mainActivityHandler == null) {
 				return;
@@ -234,9 +234,9 @@ public class FragmentMailList extends Fragment {
 			}
 			// 鑱旂郴浜哄垪琛ㄤ笅杞�
 			MainActivity.getService().phoneBookStartUpdate();
-		} catch (RemoteException e) {
-			e.printStackTrace();
-		}
+		//} catch (RemoteException e) {
+			//e.printStackTrace();
+		//}
 	}
 	
 	private void callOut(String phoneNumber2) {
@@ -251,11 +251,11 @@ public class FragmentMailList extends Fragment {
 			if (mLastNumber == null || !TextUtils.isGraphic(mLastNumber)) {
 				return;
 			}
-			try {
+			//try {
 				MainActivity.getService().phoneDail(mLastNumber);
-			} catch (RemoteException e) {
-				e.printStackTrace();
-			}
+			//} catch (RemoteException e) {
+				//e.printStackTrace();
+			//}
 		}
 	}
 	

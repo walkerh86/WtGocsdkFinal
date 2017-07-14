@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+    
+    <FrameLayout
+        android:id="@+id/title_bar"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/settings_title_bar_height"
+        android:background="#ff25bffb">
+        <TextView 
+            android:id="@+id/state"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="@string/calllog"
+            android:textColor="#ffffffff"/>
+        <TextView
+            android:id="@+id/sync"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_gravity="center_vertical|right"
+            android:gravity="center"
+            android:padding="16dp"
+            android:text="@string/sync"
+            android:textColor="#ffffffff"
+            android:visibility="gone"/>
+        <ProgressBar
+        	android:id="@+id/scanning_progress"
+        	android:paddingTop="6dp"
+        	android:layout_width="wrap_content"
+        	android:layout_height="wrap_content"
+        	android:layout_gravity="center_vertical|right"
+        	android:layout_marginRight="8dp"
+        	style="?android:attr/progressBarStyleLarge"
+        	android:visibility="gone"
+        />
+        <ImageView
+            android:id="@+id/page_indicator"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|center_horizontal"
+            android:src="@drawable/wt_settings_page2_indicator2"/>
+    </FrameLayout>
+    
+	<android.support.v4.view.ViewPager
+	    android:id="@+id/view_pager"
+	    android:layout_width="match_parent"
+	    android:layout_height="0dp"
+	    android:layout_weight="1"/>
+	
+</LinearLayout>

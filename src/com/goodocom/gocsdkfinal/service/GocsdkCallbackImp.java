@@ -194,6 +194,12 @@ public class GocsdkCallbackImp extends IGocsdkCallback.Stub {
 		if(mOnPairedListener != null){
 			mOnPairedListener.onCurrentAddr(addr);
 		}
+		if(mOnPhbListener != null){
+			mOnPhbListener.onCurrentAddr(addr);
+		}
+		if(mOnCalllogListener != null){
+			mOnCalllogListener.onCurrentAddr(addr);
+		}
 		Handler handler2 = FragmentBlueToothList.getHandler();
 		if(handler2!=null){
 			Message msg = new Message();
@@ -318,21 +324,29 @@ public class GocsdkCallbackImp extends IGocsdkCallback.Stub {
 
 	@Override
 	public void onPhoneBook(String name, String number) throws RemoteException {
+		phoneBook phonebook = new phoneBook();
+		phonebook.name = name;
+		phonebook.num = number;
+		if(mOnPhbListener != null){
+			mOnPhbListener.onPhoneBook(phonebook);
+		}
+		
 		Handler handler = FragmentMailList.getHandler();
 		if (handler == null) {
 			return;
 		}
 		Message msg = new Message();
 		msg.what = FragmentMailList.MSG_PHONE_BOOK;
-		phoneBook phonebook = new phoneBook();
-		phonebook.name = name;
-		phonebook.num = number;
+		
 		msg.obj = phonebook;
 		handler.sendMessage(msg);
 	}
 
 	@Override
 	public void onPhoneBookDone() throws RemoteException {
+		if(mOnPhbListener != null){
+			mOnPhbListener.onPhoneBookDone();
+		}
 		Handler mainActivityHandler = MainActivity.getHandler();
 		if (mainActivityHandler == null)
 			return;
@@ -361,14 +375,18 @@ public class GocsdkCallbackImp extends IGocsdkCallback.Stub {
 	@Override
 	public void onCalllog(int type, String name, String number)
 			throws RemoteException {
-		Handler handler = FragmentCallog.getHandler();
-		if (handler == null) {
-			return;
-		}
 		CallLogInfo info = new CallLogInfo();
 		info.phonenumber = number;
 		info.calltype = type;
 		info.phonename = name;
+		if(mOnCalllogListener != null){
+			mOnCalllogListener.onCalllog(info);
+		}
+		
+		Handler handler = FragmentCallog.getHandler();
+		if (handler == null) {
+			return;
+		}		
 		Message msg = new Message();
 		msg.obj = info;
 		msg.what = FragmentCallog.MSG_CALLLOG;
@@ -377,7 +395,13 @@ public class GocsdkCallbackImp extends IGocsdkCallback.Stub {
 
 	@Override
 	public void onCalllogDone() throws RemoteException {
+		if(mOnCalllogListener != null){
+			mOnCalllogListener.onCalllogDone();
+		}
 		Handler mainHandler = MainActivity.getHandler();
+		if(mainHandler == null){
+			return;
+		}
 		mainHandler.sendEmptyMessage(MainActivity.MSG_UPDATE_CALLLOG_DONE);
 		
 		Handler handler = FragmentCallog.getHandler();
@@ -556,5 +580,27 @@ public class GocsdkCallbackImp extends IGocsdkCallback.Stub {
 	private OnAvailListener mOnAvailListener;
 	public void setOnAvailListener(OnAvailListener listener){
 		mOnAvailListener = listener;
+	}
+	
+	public interface OnPhbListener{
+		void onPhoneBook(phoneBook phb);
+		void onPhoneBookDone();
+		void onCurrentAddr(String addr);
+	}
+	
+	private OnPhbListener mOnPhbListener;
+	public void setOnPhbListener(OnPhbListener listener){
+		mOnPhbListener = listener;
+	}
+	
+	public interface OnCalllogListener{
+		void onCalllog(CallLogInfo calllog);
+		void onCalllogDone();
+		void onCurrentAddr(String addr);
+	}
+	
+	private OnCalllogListener mOnCalllogListener;
+	public void setOnCalllogListener(OnCalllogListener listener){
+		mOnCalllogListener = listener;
 	}
 }

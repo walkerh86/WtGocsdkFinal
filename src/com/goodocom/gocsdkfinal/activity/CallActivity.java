@@ -442,11 +442,11 @@ public class CallActivity extends Activity implements OnClickListener,View.OnTou
 				if (mLastNumber == null || !TextUtils.isGraphic(mLastNumber)) {
 					return;
 				}
-				try {
+				//try {
 					mGocsdkServiceHelper.phoneDail(mLastNumber);
-				} catch (RemoteException e) {
-					e.printStackTrace();
-				}
+				//} catch (RemoteException e) {
+					//e.printStackTrace();
+				//}
 			}
 		}
 

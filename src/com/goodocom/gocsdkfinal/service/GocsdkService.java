@@ -483,7 +483,7 @@ public class GocsdkService extends Service {
 	private static final int BT_STATE_ON = 1;
 	private int mBtState = BT_STATE_UNKOWN;
 	public boolean isOpened(){
-		Log.i(GocsdkExtService.TAG, "isConnected mBtState="+mBtState);
+		Log.i(TAG, "isOpened mBtState="+mBtState);
 		return mBtState == BT_STATE_ON;
 	}
 

@@ -11,7 +11,7 @@
         android:layout_height="wrap_content"
         android:layout_marginLeft="10dp"
         android:layout_centerVertical="true"
-        android:src="@drawable/ico_6057_lianxrhm" />
+        android:src="@drawable/wt_contacts_icon_dark" />
 
     <LinearLayout
         
@@ -26,16 +26,14 @@
             android:id="@+id/tv_name"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textColor="#fff"
-            android:text="客服电话"
+            android:textColor="#ff000000"
             android:textSize="20sp" />
 
         <TextView
             android:id="@+id/tv_number"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="10021"
-            android:textColor="#fff"
+            android:textColor="#ff000000"
             android:textSize="20sp" />
     </LinearLayout>
 </RelativeLayout>
