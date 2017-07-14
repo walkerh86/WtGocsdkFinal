@@ -41,7 +41,7 @@ public class WtFragmentAvailBtList extends Fragment{
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
-		View view = View.inflate(getActivity(), R.layout.wt_fragment_bt_list, null);
+		View view = View.inflate(getActivity(), R.layout.wt_fragment_bt_avil_list, null);
 		ListView listView = (ListView) view.findViewById(R.id.lv_paired_list);
 		mDeviceAdapter = new DeviceAdapter();
 		listView.setAdapter(mDeviceAdapter);
