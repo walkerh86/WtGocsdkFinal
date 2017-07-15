@@ -17,6 +17,8 @@ import android.os.Bundle;
 import android.app.Fragment;
 import android.support.v13.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.telephony.PhoneNumberUtils;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
@@ -83,6 +85,18 @@ public class WtContactsActivity extends BaseActivity {
 	
 	public static void showBtDisconnected(Context context){
 		Toast.makeText(context, context.getString(R.string.warning_connect), Toast.LENGTH_SHORT).show();		
+	}
+	
+	public static  void placeCall(String number,GocsdkServiceHelper gocsdkService) {
+		if (number.length() == 0)
+			return;
+		if (PhoneNumberUtils.isGlobalPhoneNumber(number)) {
+			if (number == null || !TextUtils.isGraphic(number)) {
+				return;
+			}
+
+			gocsdkService.phoneDail(number);
+		}
 	}
 	
 	private class MyFragmentPagerAdapter extends FragmentPagerAdapter{

@@ -59,7 +59,7 @@ public class WtFragmentContactsList extends Fragment{
 			public void onItemClick(AdapterView<?> parent, View view,int position, long id) {					
 				if(mGocsdkServiceHelper.isBtConnected()){
 					HashMap<String, String> contact = (HashMap<String, String>)mAdapter.getItem(position);	
-					placeCall(contact.get("itemNum"));
+					WtContactsActivity.placeCall(contact.get("itemNum"),mGocsdkServiceHelper);
 				}else{
 					WtContactsActivity.showBtDisconnected(getActivity());
 				}
@@ -139,17 +139,5 @@ public class WtFragmentContactsList extends Fragment{
 		
 		mGocsdkServiceHelper.phoneBookStartUpdate();
 		showSearching();
-	}
-	
-	private void placeCall(String number) {
-		if (number.length() == 0)
-			return;
-		if (PhoneNumberUtils.isGlobalPhoneNumber(number)) {
-			if (number == null || !TextUtils.isGraphic(number)) {
-				return;
-			}
-
-			mGocsdkServiceHelper.phoneDail(number);
-		}
-	}
+	}	
 }

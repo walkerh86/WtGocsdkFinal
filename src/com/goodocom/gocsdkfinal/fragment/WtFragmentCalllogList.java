@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.goodocom.gocsdkfinal.R;
+import com.goodocom.gocsdkfinal.activity.WtContactsActivity;
 import com.goodocom.gocsdkfinal.domain.BlueToothInfo;
 import com.goodocom.gocsdkfinal.domain.BlueToothPairedInfo;
 import com.goodocom.gocsdkfinal.domain.CallLogInfo;
@@ -56,6 +57,26 @@ public class WtFragmentCalllogList extends Fragment{
 	
 	private int mPageIdx = 0;
 	private int mLoadingType = -1;
+	
+	private OnItemClickListener mOnItemClickListener = new OnItemClickListener(){
+		@Override
+		public void onItemClick(AdapterView<?> arg0, View arg1, int position, long arg3) {
+			if(!mGocsdkServiceHelper.isBtConnected()){
+				WtContactsActivity.showBtDisconnected(getActivity());
+				return;
+			}
+			SimpleAdapter adapter = (SimpleAdapter)arg0.getAdapter();
+			Log.i(TAG, "onItemClick adapter="+adapter);
+			if(adapter == null){
+				return;
+			}
+			HashMap<String, String> contact = (HashMap<String, String>)adapter.getItem(position);
+			if(contact == null){
+				return;
+			}
+			WtContactsActivity.placeCall(contact.get("itemNum"),mGocsdkServiceHelper);
+		}		
+	};
 		
 	@Override
     public void onCreate(Bundle savedInstanceState) {
@@ -68,6 +89,7 @@ public class WtFragmentCalllogList extends Fragment{
 		View view = View.inflate(getActivity(), R.layout.wt_fragment_calllog_list, null);			
 		
 		ListView inList = new ListView(getActivity());
+		inList.setOnItemClickListener(mOnItemClickListener);
 		SimpleAdapter inAdapter = new SimpleAdapter(getActivity(), mDatasIn,
 				R.layout.wt_calllog_in_list_item, new String[]{"itemName", "itemNum", "itemTime" },
 				new int[] { R.id.tv_name, R.id.tv_number,R.id.tv_time });
@@ -75,6 +97,7 @@ public class WtFragmentCalllogList extends Fragment{
 		mListViews.add(inList);
 		
 		ListView outList = new ListView(getActivity());
+		outList.setOnItemClickListener(mOnItemClickListener);
 		SimpleAdapter outAdapter = new SimpleAdapter(getActivity(), mDatasOut,
 				R.layout.wt_calllog_out_list_item, new String[]{"itemName", "itemNum", "itemTime" },
 				new int[] { R.id.tv_name, R.id.tv_number,R.id.tv_time });
@@ -82,6 +105,7 @@ public class WtFragmentCalllogList extends Fragment{
 		mListViews.add(outList);
 		
 		ListView missList = new ListView(getActivity());
+		missList.setOnItemClickListener(mOnItemClickListener);
 		SimpleAdapter missAdapter = new SimpleAdapter(getActivity(), mDatasOut,
 				R.layout.wt_calllog_miss_list_item, new String[]{"itemName", "itemNum", "itemTime" },
 				new int[] { R.id.tv_name, R.id.tv_number,R.id.tv_time });
